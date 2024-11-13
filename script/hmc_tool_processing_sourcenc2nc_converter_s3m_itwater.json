@@ -28,6 +28,7 @@
   "data": {
     "static" : {
       "source": {
+        "Not_Available": null,
         "Terrain": {
           "var_name": "Terrain",
           "folder_name": "/data/static/",
@@ -54,7 +55,7 @@
           "folder_name": "/data/input/",
           "file_name": "s3m.italy-grid.rad_rh.{source_file_datetime_generic}.nc.gz",
           "file_compression": true,
-          "file_geo_reference": "Terrain",
+          "file_geo_reference": "Not_Available",
           "file_type": "netcdf",
           "file_coords": {"x":  "longitude", "y":  "latitude", "time":  "time"},
           "file_frequency": "H"
@@ -66,7 +67,7 @@
           "folder_name": "/data/input/",
           "file_name": "s3m.italy-grid.rad_rh.{source_file_datetime_generic}.nc.gz",
           "file_compression": true,
-          "file_geo_reference": "Terrain",
+          "file_geo_reference": "Not_Available",
           "file_type": "netcdf",
           "file_coords": {"x":  "longitude", "y":  "latitude", "time":  "time"},
           "file_frequency": "H"
