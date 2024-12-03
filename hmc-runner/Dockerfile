@@ -122,28 +122,6 @@ RUN pwd
 RUN ./setup_fp_system_app_hmc.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE} ${LIBS_SYSTEM_DIR}
 # -----------------------------------------------------------------
 
-# -----------------------------------------------------------------
-# INSTALL - DOCKER PYTHON ENVS
-# clone library from github repository
-RUN git clone https://github.com/c-hydro/fp-system-env.git --branch main --single-branch /tmp/env_system
-# copy files from tmp to container folder(s)
-RUN cp -r /tmp/env_system/. ${LIBS_INSTALLER_DIR} 
-
-# start installer script for python libraries
-WORKDIR ${LIBS_INSTALLER_DIR}
-RUN pwd
-RUN ./setup_fp_system_conda_python_hmc.sh ${LIBS_PYTHON_DIR} ${PYTHON_ENV_FILE} ${PYTHON_ENV_DIR} ${PYTHON_ENV_REQ}
-
-
-# -----------------------------------------------------------------
-# INSTALL
-# clone library from github repository
-WORKDIR ${ENTRYPOINT_DIR}
-RUN git clone https://github.com/c-hydro/fp-hmc.git --branch main --single-branch /tmp/package_hmc
-# copy files from tmp to container folder(s)
-RUN cp -r /tmp/package_hmc/. ${PACKAGE_HMC_DIR} 
-RUN cp -r /tmp/package_hmc/tools/processing_tool_source2nc_converter/. ${ENTRYPOINT_DIR} 
-# -----------------------------------------------------------------
 
 
 # -----------------------------------------------------------------
@@ -217,7 +195,6 @@ SHELL ["/bin/bash", "-c"]
 
 
 COPY --from=builder ${LIBS_SYSTEM_DIR} ${LIBS_SYSTEM_DIR}
-COPY --from=builder ${LIBS_PYTHON_DIR} ${LIBS_PYTHON_DIR}
 COPY --from=builder ${PACKAGE_HMC_DIR} ${PACKAGE_HMC_DIR}
 COPY --from=builder ${ENTRYPOINT_DIR} ${ENTRYPOINT_DIR} 
 

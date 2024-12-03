@@ -5,7 +5,7 @@
 #1 DONE 0.0s
 
 #2 [internal] load build definition from Dockerfile
-#2 transferring dockerfile: 7.91kB done
+#2 transferring dockerfile: 8.06kB done
 #2 DONE 0.0s
 
 #3 [internal] load metadata for docker.io/library/ubuntu:24.04
@@ -18,130 +18,128 @@
 #5 transferring context: 33B done
 #5 DONE 0.0s
 
-#6 [builder  7/25] RUN git clone https://github.com/c-hydro/fp-system-library.git --branch main --single-branch /tmp/libs_system/
+#6 [stage-1 10/17] RUN echo "source /app/library/libs_system//fp_env_system" >> /home/app/.bashrc
 #6 CACHED
 
-#7 [builder 13/25] RUN cp -rf /tmp/app_system/. /app/library/libs_installer/
+#7 [builder  9/25] WORKDIR /app/library/libs_installer/
 #7 CACHED
 
-#8 [builder 19/25] WORKDIR /app/library/libs_installer/
+#8 [stage-1 12/17] RUN echo "export PYTHONPATH="'${PYTHONPATH}'"://app/library/package_hmc/" >> /home/app/.bashrc
 #8 CACHED
 
-#9 [builder 12/25] RUN git clone https://github.com/c-hydro/fp-system-app.git --branch main --single-branch /tmp/app_system/
+#9 [builder  3/25] RUN groupadd         --gid=1456         app     && useradd -l         --uid=1456         --gid=1456         --create-home         app
 #9 CACHED
 
-#10 [builder 11/25] RUN ./setup_fp_system_library_hmc.sh /app/library/libs_system/ fp_env_system
+#10 [builder 12/25] RUN git clone https://github.com/c-hydro/fp-system-app.git --branch main --single-branch /tmp/app_system/
 #10 CACHED
 
-#11 [builder  9/25] WORKDIR /app/library/libs_installer/
+#11 [builder 23/25] RUN git clone https://github.com/c-hydro/fp-hmc.git --branch main --single-branch /tmp/package_hmc
 #11 CACHED
 
-#12 [builder  4/25] WORKDIR /app
+#12 [builder 20/25] RUN pwd
 #12 CACHED
 
-#13 [builder 15/25] RUN pwd
+#13 [builder 17/25] RUN git clone https://github.com/c-hydro/fp-system-env.git --branch main --single-branch /tmp/env_system
 #13 CACHED
 
-#14 [builder 17/25] RUN git clone https://github.com/c-hydro/fp-system-env.git --branch main --single-branch /tmp/env_system
+#14 [stage-1  8/17] COPY --from=builder /app/library/package_hmc/ /app/library/package_hmc/
 #14 CACHED
 
-#15 [builder 10/25] RUN pwd
+#15 [builder  5/25] RUN chown -R app:app /app
 #15 CACHED
 
-#16 [builder  6/25] RUN mkdir -p /app/library/libs_installer/ 	&& mkdir -p /app/library/package_hmc/ 	&& mkdir -p /app/entrypoint/ 	&& mkdir -p /app/mnt_in/ 	&& mkdir -p /app/mnt_out/ 	&& mkdir -p /app/mnt_in/data_static/ 	&& mkdir -p /app/mnt_in/data_dynamic/ 	&& mkdir -p /app/mnt_in/model_restart/ 	&& mkdir -p /app/mnt_out/model_results/ 	&& mkdir -p /app/mnt_out/model_state/
+#16 [builder 18/25] RUN cp -r /tmp/env_system/. /app/library/libs_installer/
 #16 CACHED
 
-#17 [builder 16/25] RUN ./setup_fp_system_app_hmc.sh /app/library/libs_system/ fp_env_system /app/library/libs_system/
+#17 [stage-1  9/17] COPY --from=builder /app/entrypoint/ /app/entrypoint/
 #17 CACHED
 
-#18 [builder  5/25] RUN chown -R app:app /app
+#18 [builder  8/25] RUN cp -r /tmp/libs_system/. /app/library/libs_installer/
 #18 CACHED
 
-#19 [builder  2/25] RUN apt-get update && apt-get install -y 	git 	gfortran 	gcc 	m4 	g++ 	make 	mc 	curl 	build-essential 	wget 	cmake 	libcurl4-openssl-dev 	tzdata 	openjdk-8-jdk 	bash-completion
+#19 [builder 21/25] RUN ./setup_fp_system_conda_python_hmc.sh /app/library/libs_python/ fp_env_python3_hmc_settings fp_system_conda_python3_hmc_libraries requirements_fp_system_conda_python_hmc.yaml
 #19 CACHED
 
-#20 [builder  8/25] RUN cp -r /tmp/libs_system/. /app/library/libs_installer/
+#20 [stage-1  4/17] RUN chown -R app:app /app
 #20 CACHED
 
-#21 [builder  3/25] RUN groupadd         --gid=1456         app     && useradd -l         --uid=1456         --gid=1456         --create-home         app
+#21 [builder  4/25] WORKDIR /app
 #21 CACHED
 
-#22 [builder 18/25] RUN cp -r /tmp/env_system/. /app/library/libs_installer/
+#22 [stage-1 15/17] RUN echo "export PYTHONPATH="'${PYTHONPATH}'"://app/library/package_hmc/" >> /home/app/.profile
 #22 CACHED
 
-#23 [builder 14/25] WORKDIR /app/library/libs_installer/
+#23 [stage-1 13/17] RUN echo "source /app/library/libs_system//fp_env_system" >> /home/app/.profile
 #23 CACHED
 
-#24 [builder 20/25] RUN pwd
+#24 [builder  7/25] RUN git clone https://github.com/c-hydro/fp-system-library.git --branch main --single-branch /tmp/libs_system/
 #24 CACHED
 
-#25 [builder 21/25] RUN ./setup_fp_system_conda_python_hmc.sh /app/library/libs_python/ fp_env_python3_hmc_settings fp_system_conda_python3_hmc_libraries requirements_fp_system_conda_python_hmc.yaml
+#25 [builder 11/25] RUN ./setup_fp_system_library_hmc.sh /app/library/libs_system/ fp_env_system
 #25 CACHED
 
-#26 [builder 22/25] WORKDIR /app/entrypoint/
-#26 DONE 0.0s
+#26 [stage-1  6/17] COPY --from=builder /app/library/libs_system/ /app/library/libs_system/
+#26 CACHED
 
-#27 [builder 23/25] RUN git clone https://github.com/c-hydro/fp-hmc.git --branch main --single-branch /tmp/package_hmc
-#27 0.221 Cloning into '/tmp/package_hmc'...
-#27 DONE 7.8s
+#27 [builder 16/25] RUN ./setup_fp_system_app_hmc.sh /app/library/libs_system/ fp_env_system /app/library/libs_system/
+#27 CACHED
 
-#28 [builder 24/25] RUN cp -r /tmp/package_hmc/. /app/library/package_hmc/
-#28 DONE 0.4s
+#28 [stage-1  3/17] WORKDIR /app
+#28 CACHED
 
-#29 [builder 25/25] RUN cp -r /tmp/package_hmc/tools/processing_tool_source2nc_converter/. /app/entrypoint/
-#29 DONE 0.4s
+#29 [stage-1  5/17] RUN mkdir -p /app/library/libs_installer/ 	&& mkdir -p /app/library/package_hmc/ 	&& mkdir -p /app/entrypoint/ 	&& mkdir -p /app/mnt_in/ 	&& mkdir -p /app/mnt_out/ 	&& mkdir -p /app/mnt_in/data_static/ 	&& mkdir -p /app/mnt_in/data_dynamic/ 	&& mkdir -p /app/mnt_in/model_restart/ 	&& mkdir -p /app/mnt_out/model_results/ 	&& mkdir -p /app/mnt_out/model_state/
+#29 CACHED
 
-#30 [stage-1  3/17] WORKDIR /app
+#30 [stage-1 16/17] WORKDIR /app/entrypoint/
 #30 CACHED
 
-#31 [stage-1  4/17] RUN chown -R app:app /app
+#31 [builder 13/25] RUN cp -rf /tmp/app_system/. /app/library/libs_installer/
 #31 CACHED
 
-#32 [stage-1  6/17] COPY --from=builder /app/library/libs_system/ /app/library/libs_system/
+#32 [builder 22/25] WORKDIR /app/entrypoint/
 #32 CACHED
 
-#33 [stage-1  2/17] RUN groupadd 	--gid=1456 	app 	&& useradd -l 	--uid=1456 	--gid=1456 	--create-home 	app
+#33 [builder 25/25] RUN cp -r /tmp/package_hmc/tools/processing_tool_source2nc_converter/. /app/entrypoint/
 #33 CACHED
 
-#34 [stage-1  5/17] RUN mkdir -p /app/library/libs_installer/ 	&& mkdir -p /app/library/package_hmc/ 	&& mkdir -p /app/entrypoint/ 	&& mkdir -p /app/mnt_in/ 	&& mkdir -p /app/mnt_out/ 	&& mkdir -p /app/mnt_in/data_static/ 	&& mkdir -p /app/mnt_in/data_dynamic/ 	&& mkdir -p /app/mnt_in/model_restart/ 	&& mkdir -p /app/mnt_out/model_results/ 	&& mkdir -p /app/mnt_out/model_state/
+#34 [builder 24/25] RUN cp -r /tmp/package_hmc/. /app/library/package_hmc/
 #34 CACHED
 
-#35 [stage-1  7/17] COPY --from=builder /app/library/libs_python/ /app/library/libs_python/
+#35 [builder 19/25] WORKDIR /app/library/libs_installer/
 #35 CACHED
 
-#36 [stage-1  8/17] COPY --from=builder /app/library/package_hmc/ /app/library/package_hmc/
-#36 DONE 0.1s
+#36 [stage-1  2/17] RUN groupadd 	--gid=1456 	app 	&& useradd -l 	--uid=1456 	--gid=1456 	--create-home 	app
+#36 CACHED
 
-#37 [stage-1  9/17] COPY --from=builder /app/entrypoint/ /app/entrypoint/
-#37 DONE 0.2s
+#37 [stage-1 14/17] RUN echo "source /app/library/libs_python//fp_env_python3_hmc_settings" >> /home/app/.profile
+#37 CACHED
 
-#38 [stage-1 10/17] RUN echo "source /app/library/libs_system//fp_env_system" >> /home/app/.bashrc
-#38 DONE 0.2s
+#38 [builder 15/25] RUN pwd
+#38 CACHED
 
-#39 [stage-1 11/17] RUN echo "source /app/library/libs_python//fp_env_python3_hmc_settings" >> /home/app/.bashrc
-#39 DONE 0.3s
+#39 [stage-1  7/17] COPY --from=builder /app/library/libs_python/ /app/library/libs_python/
+#39 CACHED
 
-#40 [stage-1 12/17] RUN echo "export PYTHONPATH="'${PYTHONPATH}'"://app/library/package_hmc/" >> /home/app/.bashrc
-#40 DONE 0.3s
+#40 [stage-1 11/17] RUN echo "source /app/library/libs_python//fp_env_python3_hmc_settings" >> /home/app/.bashrc
+#40 CACHED
 
-#41 [stage-1 13/17] RUN echo "source /app/library/libs_system//fp_env_system" >> /home/app/.profile
-#41 DONE 0.4s
+#41 [builder  2/25] RUN apt-get update && apt-get install -y 	git 	gfortran 	gcc 	m4 	g++ 	make 	mc 	curl 	build-essential 	wget 	cmake 	libcurl4-openssl-dev 	tzdata 	openjdk-8-jdk 	bash-completion
+#41 CACHED
 
-#42 [stage-1 14/17] RUN echo "source /app/library/libs_python//fp_env_python3_hmc_settings" >> /home/app/.profile
-#42 DONE 0.3s
+#42 [builder 14/25] WORKDIR /app/library/libs_installer/
+#42 CACHED
 
-#43 [stage-1 15/17] RUN echo "export PYTHONPATH="'${PYTHONPATH}'"://app/library/package_hmc/" >> /home/app/.profile
-#43 DONE 0.3s
+#43 [builder  6/25] RUN mkdir -p /app/library/libs_installer/ 	&& mkdir -p /app/library/package_hmc/ 	&& mkdir -p /app/entrypoint/ 	&& mkdir -p /app/mnt_in/ 	&& mkdir -p /app/mnt_out/ 	&& mkdir -p /app/mnt_in/data_static/ 	&& mkdir -p /app/mnt_in/data_dynamic/ 	&& mkdir -p /app/mnt_in/model_restart/ 	&& mkdir -p /app/mnt_out/model_results/ 	&& mkdir -p /app/mnt_out/model_state/
+#43 CACHED
 
-#44 [stage-1 16/17] WORKDIR /app/entrypoint/
-#44 DONE 0.0s
+#44 [builder 10/25] RUN pwd
+#44 CACHED
 
 #45 [stage-1 17/17] COPY ./launcher.sh /app/entrypoint/
-#45 DONE 0.0s
+#45 CACHED
 
 #46 exporting to image
-#46 exporting layers
-#46 exporting layers 99.8s done
-#46 writing image sha256:91e786955ec461273ddad3579beff7cc34ff0245997227f711f8ca8d40215f0e done
+#46 exporting layers done
+#46 writing image sha256:2899a0655deaf7c3b3d36d81d64d9861e3df3c23b96c39ae4254453cf354e730 done
 #46 naming to docker.io/it-water/converter:dev done
-#46 DONE 99.8s
+#46 DONE 0.0s
