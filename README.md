@@ -29,3 +29,7 @@ All docker images relies on the following internal directory organization:
 	OUTPUT_MODEL_RESULTS_DIR=/app/mnt_out/model_results/ \
 	OUTPUT_MODEL_STATE_DIR=/app/mnt_out/model_state/
 ```
+
+In the current repository a [REPO_DIR]/data folder can be used to mount examples/inputs from the CIMA group to launch reduced examples and check functionalities.
+
+This data directory is ignored on CVS.
