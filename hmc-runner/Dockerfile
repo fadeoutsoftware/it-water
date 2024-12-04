@@ -228,9 +228,9 @@ RUN echo "export PYTHONPATH="'${PYTHONPATH}'":/${PACKAGE_HMC_DIR}" >> /home/app/
 # SET - DOCKER ENTRYPOINT
 # set entrypoint
 WORKDIR ${ENTRYPOINT_DIR}
-COPY ./launcher.sh ${ENTRYPOINT_DIR}
-ENTRYPOINT ["bash"]
-CMD ["./launcher.sh", "-m", "hmc_tool_processing_source2nc_converter.py", "-c", "/data/config/hmc_tool_processing_sourcenc2nc_converter_s3m_itwater.json"]
+#COPY ./launcher.sh ${ENTRYPOINT_DIR}
+#ENTRYPOINT ["bash"]
+#CMD ["./launcher.sh", "-m", "hmc_tool_processing_source2nc_converter.py", "-c", "/data/config/hmc_tool_processing_sourcenc2nc_converter_s3m_itwater.json"]
 
 # ENTRYPOINT /bin/bash
 # -----------------------------------------------------------------
