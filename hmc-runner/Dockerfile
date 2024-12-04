@@ -18,7 +18,6 @@ ENV \
 	ENTRYPOINT_DIR=/app/entrypoint/ \
 	LIBS_INSTALLER_DIR=/app/library/libs_installer/ \
 	LIBS_SYSTEM_DIR=/app/library/libs_system/ \
-	LIBS_PYTHON_DIR=/app/library/libs_python/ \
 	#
 	# TODO check this
 	#
@@ -28,9 +27,6 @@ ENV \
 	#
 	# TODO check if belows ae fine for the converter
 	#
-	PYTHON_ENV_FILE=fp_env_python3_hmc_settings \
-	PYTHON_ENV_DIR=fp_system_conda_python3_hmc_libraries \	
-	PYTHON_ENV_REQ=requirements_fp_system_conda_python_hmc.yaml \
 	# prepare share folder(s) to mount external repositories
 	INPUT_DIR=/app/mnt_in/ \
 	OUTPUT_DIR=/app/mnt_out/ \
@@ -94,7 +90,7 @@ SHELL ["/bin/bash", "-c"]
 
 # TODO check if HMC is the right one
 
-# TODO check brnaches, always replaced with master
+# TODO check branches, always replaced with master
 
 # -----------------------------------------------------------------
 # INSTALL - DOCKER SYSTEM LIBRARIES
@@ -139,19 +135,12 @@ ENV \
 	ENTRYPOINT_DIR=/app/entrypoint/ \
 	LIBS_INSTALLER_DIR=/app/library/libs_installer/ \
 	LIBS_SYSTEM_DIR=/app/library/libs_system/ \
-	LIBS_PYTHON_DIR=/app/library/libs_python/ \
 	#
 	# TODO check this
 	#
 	PACKAGE_HMC_DIR=/app/library/package_hmc/ \ 	
 	# set environment filename(s)
 	SYSTEM_ENV_FILE=fp_env_system \
-	#
-	# TODO check if belows ae fine for the converter
-	#
-	PYTHON_ENV_FILE=fp_env_python3_hmc_settings \
-	PYTHON_ENV_DIR=fp_system_conda_python3_hmc_libraries \	
-	PYTHON_ENV_REQ=requirements_fp_system_conda_python_hmc.yaml \
 	# prepare share folder(s) to mount external repositories
 	INPUT_DIR=/app/mnt_in/ \
 	OUTPUT_DIR=/app/mnt_out/ \
@@ -160,6 +149,31 @@ ENV \
 	INPUT_MODEL_RESTART_DIR=/app/mnt_in/model_restart/ \
 	OUTPUT_MODEL_RESULTS_DIR=/app/mnt_out/model_results/ \
 	OUTPUT_MODEL_STATE_DIR=/app/mnt_out/model_state/
+
+# install system-wide deps  <-> added to try to solve missing dependecies 
+# on startup of HMC_Model_V3_\$RUN.x 
+# Missing libgfortran.so.5: cannot open shared object file: No such file or directory 
+# Solved with apt install apt-get install libgfortran5
+# Missing
+RUN apt-get update && apt-get install -y \
+	git \
+	gfortran \
+	gcc \
+	m4 \
+	g++ \
+	make \
+	mc \
+	curl \
+	build-essential \
+	wget \
+	cmake \
+	libcurl4-openssl-dev \
+	tzdata \
+	openjdk-8-jdk \
+	bash-completion
+
+
+
 
 	# Create a non-root user and group
 RUN groupadd \
@@ -198,17 +212,16 @@ COPY --from=builder ${LIBS_SYSTEM_DIR} ${LIBS_SYSTEM_DIR}
 COPY --from=builder ${PACKAGE_HMC_DIR} ${PACKAGE_HMC_DIR}
 COPY --from=builder ${ENTRYPOINT_DIR} ${ENTRYPOINT_DIR} 
 
-
+#Required for point netcdf libs
+ENV LD_LIBRARY_PATH "/app/library/libs_system:/app/library/libs_system/source/nc4_fortran/fortran/.libs/"
 
 # set environmental variable(s) appending in .bashrc
 RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.bashrc
-RUN echo "source ${LIBS_PYTHON_DIR}/${PYTHON_ENV_FILE}" >> /home/app/.bashrc
-RUN echo "export PYTHONPATH="'${PYTHONPATH}'":/${PACKAGE_HMC_DIR}" >> /home/app/.bashrc
+
 
 # set environmental variable(s) appending in .profile
 RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
-RUN echo "source ${LIBS_PYTHON_DIR}/${PYTHON_ENV_FILE}" >> /home/app/.profile
-RUN echo "export PYTHONPATH="'${PYTHONPATH}'":/${PACKAGE_HMC_DIR}" >> /home/app/.profile
+
 # -----------------------------------------------------------------
 
 
@@ -228,8 +241,8 @@ RUN echo "export PYTHONPATH="'${PYTHONPATH}'":/${PACKAGE_HMC_DIR}" >> /home/app/
 # SET - DOCKER ENTRYPOINT
 # set entrypoint
 WORKDIR ${ENTRYPOINT_DIR}
-#COPY ./launcher.sh ${ENTRYPOINT_DIR}
-#ENTRYPOINT ["bash"]
+COPY ./launcher.sh ${ENTRYPOINT_DIR}
+ENTRYPOINT ["bash"]
 #CMD ["./launcher.sh", "-m", "hmc_tool_processing_source2nc_converter.py", "-c", "/data/config/hmc_tool_processing_sourcenc2nc_converter_s3m_itwater.json"]
 
 # ENTRYPOINT /bin/bash
