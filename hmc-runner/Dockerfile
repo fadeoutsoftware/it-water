@@ -213,7 +213,7 @@ COPY --from=builder ${PACKAGE_HMC_DIR} ${PACKAGE_HMC_DIR}
 COPY --from=builder ${ENTRYPOINT_DIR} ${ENTRYPOINT_DIR} 
 
 #Required for point netcdf libs
-ENV LD_LIBRARY_PATH "/app/library/libs_system:/app/library/libs_system/source/nc4_fortran/fortran/.libs/"
+ENV LD_LIBRARY_PATH="/app/library/libs_system:/app/library/libs_system/source/nc4_fortran/fortran/.libs/"
 
 # set environmental variable(s) appending in .bashrc
 RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.bashrc
