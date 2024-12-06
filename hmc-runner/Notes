@@ -63,4 +63,6 @@ Backtrace for this error:
 
 
 TODO : 
-- Check if reloading image from tar it works in the environment where the image was produced
+- Check if reloading image from tar it works in the environment where the image was produced -> yes it does 
+- Try to reboot the machine after docker installation 
+- Try to align the docker version between the machines
