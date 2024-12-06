@@ -32,3 +32,35 @@ docker build -t hmc-runner .
 
 RUN
 docker run -itd -v C:\Users\m.menapace.FADEOUT\Documents\Fadeout\Projects\IT-WATER\it-water\data\case_study_hmc:/app/mnt_in -v C:\Users\m.menapace.FADEOUT\Documents\Fadeout\Projects\IT-WATER\it-water\data\case_study_hmc_out:/app/mnt_out hmc-runner
+
+SAVE image to a TAR file:
+
+docker save hmc-runner -o hmc-runner.ta
+
+Upload image on our server:
+scp .\hmc-runner.tar [user]@[ip]]:/home/fadeout
+Upload source data on our server: 
+
+RUN
+docker run -itd -v C:\Users\m.menapace.FADEOUT\Documents\Fadeout\Projects\IT-WATER\it-water\data\case_study_hmc:/app/mnt_in -v C:\Users\m.menapace.FADEOUT\Documents\Fadeout\Projects\IT-WATER\it-water\data\case_study_hmc_out:/app/mnt_out hmc-runner
+docker run -itd -v ~/it-water/case_study_hmc:/app/mnt_in -v ~/it-water/case_study_hmc_out:/app/mnt_out hmc-runner
+
+
+PROBLEM 
+Program received signal SIGILL: Illegal instruction.
+
+Backtrace for this error:
+#0  0x7f9443aebe59 in ???
+#1  0x7f9443aeae75 in ???
+#2  0x7f944381231f in ???
+#3  0x55a24ab978fa in ???
+#4  0x55a24aa545ae in ???
+#5  0x7f94437f71c9 in ???
+#6  0x7f94437f728a in ???
+#7  0x55a24aa54604 in ???
+#8  0xffffffffffffffff in ???
+./launcher.sh: line 7:     7 Illegal instruction     (core dumped) /app/library/libs_system/hmc/HMC_Model_V3_\$RUN.x /app/mnt_in/namelist/marche.info.txt
+
+
+TODO : 
+- Check if reloading image from tar it works in the environment where the image was produced
