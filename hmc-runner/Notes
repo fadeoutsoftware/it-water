@@ -8,7 +8,7 @@ Useful command (within this folder..)
 build image: 
 docker build -t hmc-runner .
 
-re-build all:
+re-build all reporting all the build logs output:
 docker build --progress=plain --no-cache .
 
 re-build all and save the output in a separated file build.log:
@@ -16,3 +16,19 @@ docker build --progress=plain --no-cache . > build.log
 
 Open a bash shell in the container 
 docker exec -it [container_id] ---user root /bin/bash
+
+
+Working command within the docker container (tested with bash from docker exec)
+This has required the adaptation of the root folders in the :
+ 
+/app/library/libs_system/hmc/HMC_Model_V3_\$RUN.x /app/mnt_in/namelist/marche.info.txt
+
+TODO check passing launcher name list as argument of the docker container
+
+/app/library/libs_system/hmc/HMC_Model_V3_\$RUN.x /app/mnt_in/namelist/marche.info.txt
+
+BUILD 
+docker build -t hmc-runner .
+
+RUN
+docker run -itd -v C:\Users\m.menapace.FADEOUT\Documents\Fadeout\Projects\IT-WATER\it-water\data\case_study_hmc:/app/mnt_in -v C:\Users\m.menapace.FADEOUT\Documents\Fadeout\Projects\IT-WATER\it-water\data\case_study_hmc_out:/app/mnt_out hmc-runner

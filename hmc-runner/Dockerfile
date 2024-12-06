@@ -243,7 +243,7 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 WORKDIR ${ENTRYPOINT_DIR}
 COPY ./launcher.sh ${ENTRYPOINT_DIR}
 ENTRYPOINT ["bash"]
-#CMD ["./launcher.sh", "-m", "hmc_tool_processing_source2nc_converter.py", "-c", "/data/config/hmc_tool_processing_sourcenc2nc_converter_s3m_itwater.json"]
+CMD ["./launcher.sh"]
 
 # ENTRYPOINT /bin/bash
 # -----------------------------------------------------------------

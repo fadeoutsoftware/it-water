@@ -4,4 +4,4 @@
 # /app/library/libs_system/hmc/HMC_Model_V3_$RUN.x
 #/app/library/libs_system/hmc
 
-/app/library/libs_system/hmc/HMC_Model_V3_\$RUN.x
+/app/library/libs_system/hmc/HMC_Model_V3_\$RUN.x /app/mnt_in/namelist/marche.info.txt
