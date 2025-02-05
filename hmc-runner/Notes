@@ -64,5 +64,9 @@ Backtrace for this error:
 
 TODO : 
 - Check if reloading image from tar it works in the environment where the image was produced -> yes it does 
-- Try to reboot the machine after docker installation 
-- Try to align the docker version between the machines
+- Try to reboot the machine after docker installation -> not solved 
+- Try to align the docker version between the machines -> TODO
+
+#Testing singularity 
+Convert tar image to singularity:
+singularity build --sandbox  docker-archive://hmc-runner.tar
