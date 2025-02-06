@@ -81,15 +81,15 @@
       "execution_name": "{execution_name}", "execution_mode": "{execution_mode}"
     },
     "executable": {
-      "location": "{path_app}/S3M_Model_V533_{execution_name}.x",
+      "location": "{path_app}/S3M_Model_V534_{execution_name}.x",
       "arguments": "{path_app}/{file_namelist}"
     },
     "info": {
-      "location": "/$HOME/run_base/exec/S3M_Model_V533_{execution_name}_{execution_mode}.info"
+      "location": "/$HOME/run_base/exec/S3M_Model_V534_{execution_name}_{execution_mode}.info"
     },
     "library": {
-      "location": "$HOME/run_base_s3m/library/S3M_Model_V5_3_3.x",
-      "dependencies": ["$HOME/fp_system_libs_hmc/nc4/lib/"]
+      "location": "/app/library/package_hmc/s3m/S3M_Model_V5_3_4.x",
+      "dependencies": ["/app/library/libs_system/nc4/lib/"]
     }
   },
   "configuration": {
