@@ -45,7 +45,7 @@ docker run -itd \\
 
 SAVE image to a TAR file:
 ```
-docker save hmc-runner -o hmc-runner.ta
+docker save hmc-runner -o hmc-runner.tar
 ```
 
 Upload image on our server:
@@ -68,3 +68,6 @@ TODO :
 ### Testing singularity 
 Convert tar image to singularity:
 ```singularity build --sandbox  docker-archive://hmc-runner.tar```
+
+In Cineca Leonardo environment:
+```singularity build hmc-runner-singularity.tar docker-archive://hmc-runner.tar```
