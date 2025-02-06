@@ -266,9 +266,8 @@ WORKDIR /shybox
 
 RUN git clone https://github.com/c-hydro/shybox.git --branch dev --single-branch /shybox/
 
-WORKDIR /shybox/example
-#python3 app_data_grid_main.py app_data_grid_example.json
-COPY launcher.sh /shybox/example/
+WORKDIR /shybox/runner
+COPY launcher.sh /shybox/runner
 ENTRYPOINT ["./launcher.sh"]
 
 
