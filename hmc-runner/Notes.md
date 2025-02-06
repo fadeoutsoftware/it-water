@@ -70,4 +70,4 @@ Convert tar image to singularity:
 ```singularity build --sandbox  docker-archive://hmc-runner.tar```
 
 In Cineca Leonardo environment:
-```singularity build hmc-runner-singularity.tar docker-archive://hmc-runner.tar```
+```singularity build hmc-runner-singularity.sif docker-archive://hmc-runner.tar```
