@@ -116,6 +116,9 @@ RUN cp -rf /tmp/app_system/. ${LIBS_INSTALLER_DIR}
 WORKDIR ${LIBS_INSTALLER_DIR}
 RUN pwd
 RUN ./setup_fp_system_app_hmc.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE} ${LIBS_SYSTEM_DIR}
+
+### TODO ADD similar call in the S3M docker image generation
+
 # -----------------------------------------------------------------
 
 
@@ -138,6 +141,7 @@ ENV \
 	#
 	# TODO check this
 	#
+	# Match on PATH_EXEC on new version 
 	PACKAGE_HMC_DIR=/app/library/package_hmc/ \ 	
 	# set environment filename(s)
 	SYSTEM_ENV_FILE=fp_env_system \
@@ -205,7 +209,7 @@ RUN mkdir -p ${LIBS_INSTALLER_DIR} \
 
 
 # change default shell (from sh to bash)
-SHELL ["/bin/bash", "-c"]
+#SHELL ["/bin/bash", "-c"]
 
 
 COPY --from=builder ${LIBS_SYSTEM_DIR} ${LIBS_SYSTEM_DIR}
@@ -224,7 +228,29 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 
 # -----------------------------------------------------------------
 
+# -----------------------------------------------------------------
 
+
+ENV PYTHON_ENV_FILE=fp_env_python3_hmc_settings \
+	PYTHON_ENV_DIR=fp_system_conda_python3_hmc_libraries \	
+ 	PYTHON_ENV_REQ=requirements_fp_system_conda_python_hmc.yaml \
+	LIBS_PYTHON_DIR=/app/library/libs_python/ 
+
+	
+# INSTALL - DOCKER PYTHON ENVS
+# clone library from github repository
+RUN git clone https://github.com/c-hydro/fp-system-env.git --branch main --single-branch /tmp/env_system
+# copy files from tmp to container folder(s)
+RUN cp -r /tmp/env_system/. ${LIBS_INSTALLER_DIR} 
+
+# start installer script for python libraries
+WORKDIR ${LIBS_INSTALLER_DIR}
+RUN pwd
+RUN ./setup_fp_system_conda_python_hmc.sh ${LIBS_PYTHON_DIR} ${PYTHON_ENV_FILE} ${PYTHON_ENV_DIR} ${PYTHON_ENV_REQ}
+
+ENV PYTHON_ENV_FILE=${LIBS_PYTHON_DIR}/${PYTHON_ENV_FILE}
+
+#RUN source $PYTHON_ENV_FILE
 # Setup WebServer
 # WORKDIR /app
 # COPY ./app /app
@@ -234,17 +260,17 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 # RUN ./setup_server.sh ${LIBS_PYTHON_DIR} ${PYTHON_ENV_DIR}
 # ENTRYPOINT ./start_server.sh
 
+### New repository SHYBOX
+### TODO initialization of ENV variables 
+WORKDIR /shybox
+
+RUN git clone https://github.com/c-hydro/shybox.git --branch dev --single-branch /shybox/
+
+WORKDIR /shybox/example
+#python3 app_data_grid_main.py app_data_grid_example.json
+COPY launcher.sh /shybox/example/
+ENTRYPOINT ["./launcher.sh"]
 
 
 
-# -----------------------------------------------------------------
-# SET - DOCKER ENTRYPOINT
-# set entrypoint
-WORKDIR ${ENTRYPOINT_DIR}
-COPY ./launcher.sh ${ENTRYPOINT_DIR}
-ENTRYPOINT ["bash"]
-CMD ["./launcher.sh"]
-
-# ENTRYPOINT /bin/bash
-# -----------------------------------------------------------------
 
