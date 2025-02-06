@@ -204,7 +204,9 @@ RUN mkdir -p ${LIBS_INSTALLER_DIR} \
 	&& mkdir -p ${INPUT_DYNAMIC_DIR} \
 	&& mkdir -p ${INPUT_MODEL_RESTART_DIR} \
 	&& mkdir -p ${OUTPUT_MODEL_RESULTS_DIR} \
-	&& mkdir -p ${OUTPUT_MODEL_STATE_DIR}
+	&& mkdir -p ${OUTPUT_MODEL_STATE_DIR} \
+	&& mkdir -p /app/shybox \
+	&& mkdir -p /app/exec
 
 
 
@@ -236,7 +238,8 @@ ENV PYTHON_ENV_FILE=fp_env_python3_hmc_settings \
  	PYTHON_ENV_REQ=requirements_fp_system_conda_python_hmc.yaml \
 	LIBS_PYTHON_DIR=/app/library/libs_python/ 
 
-	
+
+# TODO - change conda env building - can be a local file
 # INSTALL - DOCKER PYTHON ENVS
 # clone library from github repository
 RUN git clone https://github.com/c-hydro/fp-system-env.git --branch main --single-branch /tmp/env_system
@@ -262,14 +265,14 @@ ENV PYTHON_ENV_FILE=${LIBS_PYTHON_DIR}/${PYTHON_ENV_FILE}
 
 ### New repository SHYBOX
 ### TODO initialization of ENV variables 
-WORKDIR /shybox
+WORKDIR /app/shybox
+RUN git clone https://github.com/c-hydro/shybox.git --branch dev --single-branch /app/shybox/
 
-RUN git clone https://github.com/c-hydro/shybox.git --branch dev --single-branch /shybox/
-
-WORKDIR /shybox/runner
-COPY launcher.sh /shybox/runner
+WORKDIR /app/shybox/workflow/runner
+COPY launcher.sh /app/shybox/workflow/runner
+COPY app_runner_workflow_hmc_base.json /app/shybox/workflow/runner
 ENTRYPOINT ["./launcher.sh"]
-
+#ENTRYPOINT /bin/bash
 
 
 

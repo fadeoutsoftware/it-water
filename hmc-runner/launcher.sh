@@ -1,9 +1,9 @@
 #!/bin/bash -e
 
-# Command to be launched within docker
-# /app/library/libs_system/hmc/HMC_Model_V3_$RUN.x
-#/app/library/libs_system/hmc
-
 source $PYTHON_ENV_FILE
 
-/app/library/libs_system/hmc/HMC_Model_V3_\$RUN.x /app/mnt_in/namelist/marche.info.txt
+export PYTHONPATH="${PYTHONPATH}:/app/shybox"
+
+pip install tabulate
+
+python app_runner_workflow_hmc_base_main.py -settings app_runner_workflow_hmc_base.json -time "2021-11-26 00:23"
