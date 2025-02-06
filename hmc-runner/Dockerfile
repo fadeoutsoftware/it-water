@@ -115,7 +115,7 @@ RUN cp -rf /tmp/app_system/. ${LIBS_INSTALLER_DIR}
 # start installer script for hmc libraries
 WORKDIR ${LIBS_INSTALLER_DIR}
 RUN pwd
-RUN ./setup_fp_system_app_hmc.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE} ${LIBS_SYSTEM_DIR}
+RUN ./setup_fp_system_app_hmc.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE} ${PACKAGE_HMC_DIR}
 
 ### TODO ADD similar call in the S3M docker image generation
 
@@ -267,6 +267,7 @@ ENV PYTHON_ENV_FILE=${LIBS_PYTHON_DIR}/${PYTHON_ENV_FILE}
 ### TODO initialization of ENV variables 
 WORKDIR /app/shybox
 RUN git clone https://github.com/c-hydro/shybox.git --branch dev --single-branch /app/shybox/
+
 
 WORKDIR /app/shybox/workflow/runner
 COPY launcher.sh /app/shybox/workflow/runner

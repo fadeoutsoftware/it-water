@@ -1,0 +1,1 @@
+docker build --no-cache --progress=plain -t it-water/s3m-runner:dev .

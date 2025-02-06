@@ -1,5 +1,5 @@
 {
-  "__comment__" : "configuration file for the hmc runner information",
+  "__comment__" : "configuration file for the s3m runner information",
   "settings": {
     "priority": {"reference": "environment", "other": "user"},
     "flags": {"update_namelist": true, "update_execution": true},
@@ -8,9 +8,9 @@
         "user": {
           "time_run": "{time_run}", "time_restart": "{time_restart}",
           "time_start": null, "time_end": null,
-          "time_period": 2, "time_rounding": "H", "time_frequency": "H",
+          "time_period": 5, "time_rounding": "H", "time_frequency": "H",
           "file_namelist": "{execution_name}_{domain_name}.namelist", "file_log": "{execution_name}_{domain_name}.log",
-          "execution_name": "exec_base", "execution_mode": "deterministic"
+          "execution_name": "exec_base_s3m", "execution_mode": "deterministic"
         },
         "environment": {
           "domain_name": "DOMAIN_NAME",
@@ -46,34 +46,29 @@
   },
   "namelist": {
     "description": {
-      "version": "3.1.6", "type": "hmc"
+      "version": "5.3.3", "type": "s3m"
     },
     "file": {
-      "template": "hmc.template.info.v3.1.6.txt",
+      "template": "s3m.template.info.v5.3.3.txt",
       "project": "{path_app}/{file_namelist}"
     },
     "fields": {
       "by_value": {
         "sDomainName": "{domain_name}",
-        "sPathData_Static_Point": "{path_source}/data_geo/point/",
-        "sPathData_Static_Gridded": "{path_source}/data_geo/gridded/",
-        "sPathData_Forcing_Gridded": "{path_source}/data_forcing/gridded/$yyyy/$mm/$dd/",
-        "sPathData_Forcing_Point": "{path_source}/data_forcing/point/$yyyy/$mm/$dd/",
-        "sPathData_Forcing_TimeSeries": "{path_source}/data_forcing/time_series/",
-        "sPathData_Updating_Gridded": "{path_source}/data_forcing/gridded/$yyyy/$mm/$dd/",
-        "sPathData_Updating_Point": "{path_source}/data_forcing/point/$yyyy/$mm/$dd/",
-        "sPathData_Restart_Gridded": "{path_destination}/model_restart/",
-        "sPathData_Restart_Point": "{path_destination}/model_restart/",
-        "sPathData_Output_Point": "{path_destination}/model_results/point/$yyyy/$mm/$dd/",
-        "sPathData_Output_Gridded": "{path_destination}/model_results/gridded/$yyyy/$mm/$dd/",
-        "sPathData_Output_TimeSeries": "{path_destination}/model_results/time_series/",
-        "sPathData_State_Gridded": "{path_destination}/model_state/gridded/$yyyy/$mm/$dd/",
-        "sPathData_State_Point": "{path_destination}/model_state/point/$yyyy/$mm/$dd/",
+        "sPathData_Static_Gridded": "{path_source}/static/",
+        "sPathData_Forcing_Gridded": "{path_source}/input/$yyyy/$mm/$dd/",
+        "sPathData_Updating_Gridded": "{path_source}/updating/$yyyy/$mm/$dd/",
+        "sPathData_Output_Gridded": "{path_source}/output/$yyyy/$mm/$dd/",
+        "sPathData_Restart_Gridded": "{path_source}/output/$yyyy/$mm/$dd/",
+        "sPathData_SWE_Assimilation_Gridded": "{path_source}/updating_swe/$yyyy/$mm/$dd/",
         "sTimeStart": "{time_run}",
         "sTimeRestart": "{time_restart}",
         "iSimLength": "{time_period}",
-        "iTcMax": 0,
-        "iTVeg": 800
+        "iFlagRestart": 1,
+        "iFlagSnowAssim": 0,
+        "a1dGeoForcing": [45.461001, 6.793001],
+        "a1dResForcing": [0.002582, 0.002582],
+        "a1iDimsForcing": [206, 446]
       },
       "by_pattern": {
         "pattern_dt": {"active": true, "template": "iDt", "value": 3600},
@@ -86,15 +81,15 @@
       "execution_name": "{execution_name}", "execution_mode": "{execution_mode}"
     },
     "executable": {
-      "location": "{path_app}/HMC_Model_V3_{execution_name}.x",
+      "location": "{path_app}/S3M_Model_V533_{execution_name}.x",
       "arguments": "{path_app}/{file_namelist}"
     },
     "info": {
-      "location": "/$HOME/run_base/exec/HMC_Model_V3_{execution_name}_{execution_mode}.info"
+      "location": "/$HOME/run_base/exec/S3M_Model_V533_{execution_name}_{execution_mode}.info"
     },
     "library": {
-      "location": "/app/library/package_hmc/hmc/HMC_Model_V3_$RUN.x",
-      "dependencies": ["/app/library/libs_system/nc4/lib/"]
+      "location": "$HOME/run_base_s3m/library/S3M_Model_V5_3_3.x",
+      "dependencies": ["$HOME/fp_system_libs_hmc/nc4/lib/"]
     }
   },
   "configuration": {
