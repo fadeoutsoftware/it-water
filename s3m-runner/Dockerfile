@@ -266,7 +266,7 @@ ENV PYTHON_ENV_FILE=${LIBS_PYTHON_DIR}/${PYTHON_ENV_FILE}
 ### New repository SHYBOX
 ### TODO initialization of ENV variables 
 WORKDIR /app/shybox
-RUN git clone https://github.com/c-hydro/shybox.git --branch dev --single-branch /app/shybox/
+RUN git clone https://github.com/c-hydro/shybox.git --branch itwater --single-branch /app/shybox/
 
 
 WORKDIR /app/shybox/workflow/runner
