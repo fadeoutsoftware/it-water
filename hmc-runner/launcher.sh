@@ -6,4 +6,4 @@ export PYTHONPATH="${PYTHONPATH}:/app/shybox"
 
 pip install tabulate
 
-python app_runner_workflow_hmc_base_main.py -settings app_runner_workflow_hmc_base.json
+python /app/shybox/workflow/runner/app_runner_workflow_hmc_base_main.py -settings /app/shybox/workflow/runner/app_runner_workflow_hmc_base.json
