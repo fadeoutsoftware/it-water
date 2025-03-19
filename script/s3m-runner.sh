@@ -1,4 +1,5 @@
 docker run -it \
+-u root \
 --name s3m-runner \
 --mount type=bind,source=./data/case_study_s3m,target=/app/exec/data \
 --env-file .env-s3m-runner \

@@ -64,7 +64,7 @@
         "sTimeStart": "{time_run}",
         "sTimeRestart": "{time_restart}",
         "iSimLength": "{time_period}",
-        "iFlagRestart": 1,
+        "iFlagRestart": 0,
         "iFlagSnowAssim": 0,
         "a1dGeoForcing": [45.461001, 6.793001],
         "a1dResForcing": [0.002582, 0.002582],

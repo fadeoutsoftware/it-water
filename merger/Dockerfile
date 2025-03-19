@@ -16,15 +16,12 @@ ENV \
     APP_UID=1456 \
 	# set environment folder(s)
 	ENTRYPOINT_DIR=/app/entrypoint/ \
-	LIBS_INSTALLER_DIR=/app/library/libs_installer/ \
-	LIBS_SYSTEM_DIR=/app/library/libs_system/ \
+	LIBS_INSTALLER_DIR=/app/library/libs_installer/ \	
 	LIBS_PYTHON_DIR=/app/library/libs_python/ \
 	#
 	# TODO check this
 	#
 	PACKAGE_HMC_DIR=/app/library/package_hmc/ \ 	
-	# set environment filename(s)
-	SYSTEM_ENV_FILE=fp_env_system \
 	#
 	# TODO check if belows ae fine for the converter
 	#
@@ -43,19 +40,9 @@ ENV \
 # install system-wide deps 
 RUN apt-get update && apt-get install -y \
 	git \
-	gfortran \
-	gcc \
-	m4 \
-	g++ \
-	make \
-	mc \
 	curl \
-	build-essential \
 	wget \
-	cmake \
 	libcurl4-openssl-dev \
-	tzdata \
-	openjdk-8-jdk \
 	bash-completion
 
 # Create a non-root user and group
@@ -92,35 +79,10 @@ RUN mkdir -p ${LIBS_INSTALLER_DIR} \
 SHELL ["/bin/bash", "-c"]
 
 
-# TODO check if HMC is the right one
 
 # TODO check brnaches, always replaced with master
 
-# -----------------------------------------------------------------
-# INSTALL - DOCKER SYSTEM LIBRARIES
-# clone library from github repository
-RUN git clone https://github.com/c-hydro/fp-system-library.git --branch main --single-branch /tmp/libs_system/
-# copy files from tmp to container folder(s)
-RUN cp -r /tmp/libs_system/. ${LIBS_INSTALLER_DIR} 
-# start installer script for system libraries
-WORKDIR ${LIBS_INSTALLER_DIR}
-RUN pwd
-RUN ./setup_fp_system_library_hmc.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE}
-# -----------------------------------------------------------------
 
-
-# -----------------------------------------------------------------
-# INSTALL - DOCKER SYSTEM APPS
-# clone library from github repository
-RUN git clone https://github.com/c-hydro/fp-system-app.git --branch main --single-branch /tmp/app_system/
-# copy files from tmp to container folder(s)
-RUN cp -rf /tmp/app_system/. ${LIBS_INSTALLER_DIR} 
-
-# start installer script for hmc libraries
-WORKDIR ${LIBS_INSTALLER_DIR}
-RUN pwd
-RUN ./setup_fp_system_app_hmc.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE} ${LIBS_SYSTEM_DIR}
-# -----------------------------------------------------------------
 
 # -----------------------------------------------------------------
 # INSTALL - DOCKER PYTHON ENVS
@@ -159,15 +121,12 @@ ENV \
     APP_UID=1456 \
 	# set environment folder(s)
 	ENTRYPOINT_DIR=/app/entrypoint/ \
-	LIBS_INSTALLER_DIR=/app/library/libs_installer/ \
-	LIBS_SYSTEM_DIR=/app/library/libs_system/ \
+	LIBS_INSTALLER_DIR=/app/library/libs_installer/ \	
 	LIBS_PYTHON_DIR=/app/library/libs_python/ \
 	#
 	# TODO check this
 	#
 	PACKAGE_HMC_DIR=/app/library/package_hmc/ \ 	
-	# set environment filename(s)
-	SYSTEM_ENV_FILE=fp_env_system \
 	#
 	# TODO check if belows ae fine for the converter
 	#
@@ -216,44 +175,21 @@ RUN mkdir -p ${LIBS_INSTALLER_DIR} \
 SHELL ["/bin/bash", "-c"]
 
 
-COPY --from=builder ${LIBS_SYSTEM_DIR} ${LIBS_SYSTEM_DIR}
 COPY --from=builder ${LIBS_PYTHON_DIR} ${LIBS_PYTHON_DIR}
 COPY --from=builder ${PACKAGE_HMC_DIR} ${PACKAGE_HMC_DIR}
 COPY --from=builder ${ENTRYPOINT_DIR} ${ENTRYPOINT_DIR} 
 
 
-
-# set environmental variable(s) appending in .bashrc
-RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.bashrc
-RUN echo "source ${LIBS_PYTHON_DIR}/${PYTHON_ENV_FILE}" >> /home/app/.bashrc
-RUN echo "export PYTHONPATH="'${PYTHONPATH}'":/${PACKAGE_HMC_DIR}" >> /home/app/.bashrc
-
-# set environmental variable(s) appending in .profile
-RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
-RUN echo "source ${LIBS_PYTHON_DIR}/${PYTHON_ENV_FILE}" >> /home/app/.profile
-RUN echo "export PYTHONPATH="'${PYTHONPATH}'":/${PACKAGE_HMC_DIR}" >> /home/app/.profile
-# -----------------------------------------------------------------
-
-
-# Setup WebServer
-# WORKDIR /app
-# COPY ./app /app
-# COPY ./requirements.txt /app/requirements.txt 
-# COPY ./setup_server.sh /app/setup_server.sh
-# COPY ./start_server.sh /app/start_server.sh
-# RUN ./setup_server.sh ${LIBS_PYTHON_DIR} ${PYTHON_ENV_DIR}
-# ENTRYPOINT ./start_server.sh
-
-
+ENV PYTHON_ENV_FILE=${LIBS_PYTHON_DIR}/${PYTHON_ENV_FILE}
+ENV PYTHONPATH=${PYTHONPATH}:/${PACKAGE_HMC_DIR}
 
 
 # -----------------------------------------------------------------
 # SET - DOCKER ENTRYPOINT
 # set entrypoint
 WORKDIR ${ENTRYPOINT_DIR}
-COPY ./launcher.sh ${ENTRYPOINT_DIR}
-ENTRYPOINT ["bash"]
-CMD ["./launcher.sh", "-m", "hmc_tool_processing_source2nc_converter.py", "-c", "/data/config/hmc_tool_processing_sourcenc2nc_converter_s3m_itwater.json"]
+COPY ./launcher.sh .
+ENTRYPOINT ["./launcher.sh"]
 
 # ENTRYPOINT /bin/bash
 # -----------------------------------------------------------------
