@@ -3,8 +3,8 @@
 source $PYTHON_ENV_FILE
 
 # Argument(s) constants definition(s)
-path_entrypoint_app_main='hmc_tool_processing_source2nc_converter.py'
-path_entrypoint_app_configuration='/data/config/hmc_tool_processing_sourcenc2nc_converter_s3m_itwater.json'
+path_entrypoint_app_main='app_converter_workflow_s3m_base_main.py'
+path_entrypoint_app_configuration='/data/config/app_converter_workflow_s3m_base.json'
 
 
 
