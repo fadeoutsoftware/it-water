@@ -13,4 +13,4 @@ pip install rioxarray
 pip install pyresample
 pip install repurpose
 
-python /app/shybox/workflow/converter/app_converter_workflow_s3m_base_main.py -settings /app/shybox/workflow/converter/app_converter_workflow_s3m_base.json
+python /app/shybox/workflow/converter/app_converter_workflow_s3m_base_main.py -settings /app/shybox/workflow/converter/app_converter_workflow_s3m_base.json -time "2025-03-26 12:00"

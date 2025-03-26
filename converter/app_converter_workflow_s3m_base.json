@@ -12,7 +12,6 @@
       "variables": {
         "lut": {
           "user": {
-            "path_geo": "/home/fabio/Desktop/shybox/dset/data_static/gridded/",
             "time_source": null, "time_destination": null,
             "time_rounding": "D", "time_frequency": "D",
             "file_log": "{execution_name}_{domain_name}.log",
@@ -22,7 +21,9 @@
             "domain_name": "DOMAIN_NAME",
             "time_start": "TIME_START", "time_end": "TIME_END",
             "path_source": "PATH_SRC", "path_destination": "PATH_DST",
-            "path_app": "PATH_APP", "path_log": "PATH_LOG"
+            "path_app": "PATH_APP",
+            "path_log": "PATH_LOG",
+            "path_geo" : "PATH_GEO"
           }
         },
         "format": {
@@ -66,16 +67,16 @@
         },
         "data_source": {
           "air_t": {
-            "path": "{path_source}",
+            "path": "{path_source}/T/%Y/",
             "file_name": "T_{time_source}.nc"
           },
           "rh": {
-            "path": "{path_source}",
+            "path": "{path_source}/U/%Y/",
             "file_name": "U_{time_source}.nc"
           }
         },
         "data_destination": {
-          "path": "{path_destination}",
+          "path": "{path_destination}/%Y/%m/%d/",
           "file_name": "MeteoData_{time_destination}.nc",
           "format": "netcdf", "type": "s3m", "mode": "grid"
         },
