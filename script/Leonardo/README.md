@@ -14,6 +14,7 @@ The actual login is launched with
 step ssh login m.menapace@fadeout.it --provisioner cineca-hpc
 
 ## Scripts
+Before running each script a preliminary certificate generation is required with step command above.
 
 ### uploadHmcSif
 After logging in, it uploads the hmc sif to the home directory 
@@ -22,16 +23,21 @@ After logging in, it uploads the hmc sif to the home directory
 After logging in, it uploads the s3m sif to the home directory
 
 ## Notes
+#### Scratch directory
 m.menapace@fadeout.it scratch directory is : 
 /leonardo_scratch/large/userexternal/mmenapac
 
-Installation of Singularity of the same version as CINECA LEONARDO 
+#### Installation of Singularity of the same version as CINECA LEONARDO 
 
 wget https://github.com/sylabs/singularity/releases/download/v3.11.5/singularity-ce_3.11.5-focal_amd64.deb
 sudo apt install uidmap
 dpkg -i singularity-ce_3.11.5-focal_amd64.deb
 
 
-Run command based on sif mounting data directory
-
+#### Run command based on sif mounting data directory
+*Example* :
 singularity exec --writable-tmpfs --bind /home/marco/data/case_study_hmc:/app/exec/data --env-file ../script/.env-hmc-runner hmc.sif /app/shybox/workflow/runner/launcher.sh
+
+#### Leonardo ssh connection issue 
+If at login time an error message is displayed (fingerprint not validated in known host) follow these steps:
+https://wiki.u-gov.it/confluence/display/SCAIUS/FAQ#FAQ-Ireceivetheerrormessage%22WARNING:REMOTEHOSTIDENTIFICATIONHASCHANGED!%22whentryingtologin
