@@ -12,6 +12,7 @@
     "variables": {
       "lut": {
         "user": {
+          "path_geo": "/home/fabio/Desktop/shybox/dset/data_static/gridded/",
           "time_source": null,
           "time_destination": null,
           "time_rounding": "D",
@@ -28,8 +29,7 @@
           "path_source": "PATH_SRC",
           "path_destination": "PATH_DST",
           "path_app": "PATH_APP",
-          "path_log": "PATH_LOG",
-          "path_geo": "PATH_GEO"
+          "path_log": "PATH_LOG"
         }
       },
       "format": {
@@ -74,7 +74,7 @@
         "domain_name": "{domain_name}"
       },
       "time": {
-        "start": "{time_start}",
+        "start": "1981-01-01",
         "end": "{time_end}",
         "frequency": "D",
         "format": "%Y%m%d"
@@ -82,24 +82,24 @@
       "geo": {
         "terrain": {
           "path": "{path_geo}",
-          "file_name": "{domain_name}.txt"
+          "file_name": "{domain_name}.dem.txt"
         }
       },
       "data_source": {
         "rain": {
-          "path": "{path_source}/P/%Y/",
+          "path": "/home/fabio/Desktop/shybox/dset/itwater",
           "file_name": "P_{time_source}.nc"
         },
         "air_t": {
-          "path": "{path_source}/T/%Y/",
+          "path": "{path_source}",
           "file_name": "T_{time_source}.nc"
         },
         "rh": {
-          "path": "{path_source}/U/%Y/",
+          "path": "/home/fabio/Desktop/shybox/dset/itwater",
           "file_name": "U_{time_source}.nc"
         },
         "inc_rad": {
-          "path": "{path_source}/R/%Y/",
+          "path": "/home/fabio/Desktop/shybox/dset/itwater",
           "file_name": "R_{time_source}.nc"
         }
       },
