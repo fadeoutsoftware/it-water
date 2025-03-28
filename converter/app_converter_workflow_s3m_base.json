@@ -54,8 +54,8 @@
           "domain_name": "{domain_name}"
         },
         "time": {
-          "start": "1981-01-01",
-          "end": "1981-01-15",
+          "start": "{time_start}",
+          "end": "{time_end}",
           "frequency": "D",
           "format": "%Y%m%d"
         },
