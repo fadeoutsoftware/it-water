@@ -1,0 +1,2 @@
+## Just an example to be fixed
+singularity exec --writable-tmpfs --env-file .env-converter --env PATH_DST=/app/exec/data/output/Marche --bind ./data/case_study_converter:/app/exec/data,./data/case_study_converter/logs:/app/exec/logs,./tmp:/home/m.menapace/tmp converter.sif /app/shybox/workflow/converter/launcher.sh
