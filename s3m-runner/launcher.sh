@@ -1,5 +1,4 @@
 #!/bin/bash -e
-
 source $PYTHON_ENV_FILE
 
 export PYTHONPATH="${PYTHONPATH}:/app/shybox"
