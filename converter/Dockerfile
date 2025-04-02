@@ -245,12 +245,12 @@ RUN /app/shybox/setup_conda_shybox_base.sh
 ENV	CONDA_PATH=/app/shybox/conda
 
 WORKDIR /app/shybox/workflow/converter
-COPY launcher.sh /app/shybox/workflow/converter
+COPY venvSetup.sh /app/shybox/workflow/converter
+RUN /app/shybox/workflow/converter/venvSetup.sh
 
 COPY app_converter_workflow_s3m_base.json /app/shybox/workflow/converter
 COPY app_converter_workflow_s3m_base_main.py /app/shybox/workflow/converter
+
+COPY launcher.sh /app/shybox/workflow/converter
 ENTRYPOINT ["./launcher.sh"]
 
-##1 Missing shybox in final directory <-> module not found 
-##2 Missing tabulate <-> pip install 
-##3 Missing rioxarray <-> pip install 
