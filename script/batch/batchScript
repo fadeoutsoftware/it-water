@@ -1,3 +1,12 @@
 #!/bin/bash
-#SBATCH --nodes=20
+#SBATCH --ntasks=1
+#SBATCH --array=1-20
+#SBATCH --mem=2G
+#SBATCH --output=converter_array_job_%A_%a.out
 
+config=./config
+
+domain_name=$(awk -v ArrayTaskID=$SLURM_ARRAY_TASK_ID '$1==ArrayTaskID {print $2}' $config)
+
+echo ${domain_name}
+srun singularity exec --writable-tmpfs --env-file .env-converter --env PATH_DST=/app/exec/data/output/${domain_name} --env DOMAIN_NAME=${domain_name} --bind ./data/case_study_con>
