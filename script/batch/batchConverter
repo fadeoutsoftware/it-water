@@ -10,4 +10,4 @@ config=./config
 domain_name=$(awk -v ArrayTaskID=$SLURM_ARRAY_TASK_ID '$1==ArrayTaskID {print $2}' $config)
 
 echo ${domain_name}
-srun singularity exec --writable-tmpfs --env-file .env-converter --env PATH_DST=/app/exec/data/output/${domain_name} --env DOMAIN_NAME=${domain_name} --bind ./data/case_study_con>
+srun singularity exec --writable-tmpfs --env-file .env-converter --env PATH_DST=/app/exec/data/output/${domain_name} --env DOMAIN_NAME=${domain_name} --bind ./data/case_study_converter:/app/exec/data,./data/case_study_converter/logs:/app/exec/logs,./tmp:/tmp converter.sif /app/shybox/workflow/converter/launcher.sh
