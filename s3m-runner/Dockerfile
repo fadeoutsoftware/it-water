@@ -272,8 +272,8 @@ RUN git clone https://github.com/c-hydro/shybox.git --branch itwater --single-br
 WORKDIR /app/shybox/workflow/runner
 COPY launcher.sh /app/shybox/workflow/runner
 COPY app_runner_workflow_s3m_base.json /app/shybox/workflow/runner
-#ENTRYPOINT ["./launcher.sh"]
-ENTRYPOINT /bin/bash
+ENTRYPOINT ["./launcher.sh"]
+
 
 
 
