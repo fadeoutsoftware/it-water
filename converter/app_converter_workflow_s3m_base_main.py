@@ -118,7 +118,7 @@ def main(alg_collectors_settings: dict = None):
         "WORKFLOW": {
             "options": {
                 "intermediate_output": "Tmp",
-                "tmp_dir": "tmp"
+                "tmp_dir": alg_variables_settings['path_tmp']
             },
             "process_list": {
                 "rain": [
