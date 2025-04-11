@@ -47,7 +47,7 @@ from shybox.runner_toolkit.time.driver_app_time import DrvTime
 from shybox.orchestrator_toolkit.orchestrator_handler_base import OrchestratorHandler as Orchestrator
 from shybox.dataset_toolkit.dataset_handler_local import DataLocal
 
-# fx imported in the PROCESSES
+# fx imported in the PROCESSES (will be used in the global variables PROCESSES) --> DO NOT REMOVE
 from shybox.processing_toolkit.lib_proc_mask import mask_data_by_ref, mask_data_by_limits
 from shybox.processing_toolkit.lib_proc_interp import interpolate_data
 
@@ -260,7 +260,7 @@ def main(alg_collectors_settings: dict = None):
             path=alg_variables_application['data_destination']['path'],
             file_name=file_name,
             time_signature='step',
-            file_format='netcdf', file_mode='grid', file_variable=None,
+            file_format='netcdf', file_mode='grid', file_variable=['rain', 'air_t', 'rh', 'inc_rad'],
             file_type=alg_variables_application['data_destination']['type'],
             file_template={
                 "dims_geo": {"longitude": "X", "latitude": "Y", "time": "time"},
@@ -275,7 +275,7 @@ def main(alg_collectors_settings: dict = None):
 
         # orchestrator settings
         orc_process = Orchestrator.multi_variable(
-            data_package=[rain_data, airt_data, rh_data, inc_rad_data], data_out=output_data,
+            data_package_in=[rain_data, airt_data, rh_data, inc_rad_data], data_package_out=output_data,
             data_ref=geo_data,
             configuration=configuration['WORKFLOW']
         )
