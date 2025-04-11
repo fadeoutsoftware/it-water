@@ -233,46 +233,23 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 # -----------------------------------------------------------------
 
 
-ENV PYTHON_ENV_FILE=fp_env_python3_hmc_settings \
-	PYTHON_ENV_DIR=fp_system_conda_python3_hmc_libraries \	
- 	PYTHON_ENV_REQ=requirements_fp_system_conda_python_hmc.yaml \
-	LIBS_PYTHON_DIR=/app/library/libs_python/ 
-
-
-# TODO - change conda env building - can be a local file
-# INSTALL - DOCKER PYTHON ENVS
-# clone library from github repository
-RUN git clone https://github.com/c-hydro/fp-system-env.git --branch main --single-branch /tmp/env_system
-# copy files from tmp to container folder(s)
-RUN cp -r /tmp/env_system/. ${LIBS_INSTALLER_DIR} 
-
-# start installer script for python libraries
-WORKDIR ${LIBS_INSTALLER_DIR}
-RUN pwd
-RUN ./setup_fp_system_conda_python_hmc.sh ${LIBS_PYTHON_DIR} ${PYTHON_ENV_FILE} ${PYTHON_ENV_DIR} ${PYTHON_ENV_REQ}
-
-ENV PYTHON_ENV_FILE=${LIBS_PYTHON_DIR}/${PYTHON_ENV_FILE}
-
-#RUN source $PYTHON_ENV_FILE
-# Setup WebServer
-# WORKDIR /app
-# COPY ./app /app
-# COPY ./requirements.txt /app/requirements.txt 
-# COPY ./setup_server.sh /app/setup_server.sh
-# COPY ./start_server.sh /app/start_server.sh
-# RUN ./setup_server.sh ${LIBS_PYTHON_DIR} ${PYTHON_ENV_DIR}
-# ENTRYPOINT ./start_server.sh
-
 ### New repository SHYBOX
-### TODO initialization of ENV variables 
+
 WORKDIR /app/shybox
 RUN git clone https://github.com/c-hydro/shybox.git --branch itwater --single-branch /app/shybox/
 
+RUN /app/shybox/setup_conda_shybox_base.sh
+
+ENV	CONDA_PATH=/app/shybox/conda
 
 WORKDIR /app/shybox/workflow/runner
+COPY venvSetup.sh /app/shybox/workflow/runner
+RUN /app/shybox/workflow/runner/venvSetup.sh
+
 COPY launcher.sh /app/shybox/workflow/runner
-COPY app_runner_workflow_s3m_base.json /app/shybox/workflow/runner
 ENTRYPOINT ["./launcher.sh"]
+
+
 
 
 

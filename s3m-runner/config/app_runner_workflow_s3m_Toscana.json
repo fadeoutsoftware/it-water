@@ -108,16 +108,16 @@
         "iFlagIceMassBalance": 2,
         "iFlagGlacierDebris": 1,
         "a1dGeoForcing": [
-          45.461001,
-          6.793001
+          42.236303,
+          9.685141
         ],
         "a1dResForcing": [
           0.002582,
           0.002582
         ],
         "a1iDimsForcing": [
-          206,
-          446
+          1106,
+          1329          
         ]
       },
       "by_pattern": {
