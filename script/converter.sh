@@ -1,3 +1,5 @@
+dos2unix .env-converter
+
 docker run -it \
 -u root \
 --name converter \
