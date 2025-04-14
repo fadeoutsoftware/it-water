@@ -29,20 +29,22 @@
           "domain_name": "DOMAIN_NAME",
           "path_source": "PATH_SRC",
           "path_destination": "PATH_DST",
+          "path_static": "PATH_STATIC",
+          "path_app": "PATH_APP",
+          "path_log": "PATH_LOG",
           "time_run": "TIME_RUN",
           "time_restart": "TIME_RESTART",
           "time_end": "TIME_END",
           "time_period": "TIME_PERIOD",
-          "path_app": "PATH_APP",
-          "path_log": "PATH_LOG",
           "path_namelist": "PATH_NAMELIST",
-          "restart" : "S3M_RESTART"        
+          "restart" : "S3M_RESTART"
         }
       },
       "format": {
         "domain_name": "string",
         "path_source": "string",
         "path_destination": "string",
+        "path_static": "string",
         "time_run": "timestamp",
         "time_restart": "timestamp",
         "time_period": "int",
@@ -63,6 +65,7 @@
         "domain_name": "string",
         "path_source": "string",
         "path_destination": "string",
+        "path_static": "string",
         "time_run": "%Y%m%d%H00",
         "time_restart": "%Y%m%d%H00",
         "time_period": "int",
@@ -93,7 +96,7 @@
     "fields": {
       "by_value": {
         "sDomainName": "{domain_name}",
-        "sPathData_Static_Gridded": "{path_source}/static/",
+        "sPathData_Static_Gridded": "{path_static}",
         "sPathData_Forcing_Gridded": "{path_source}/$yyyy/$mm/$dd/",
         "sPathData_Updating_Gridded": "NOTUSED",
         "sPathData_Output_Gridded": "{path_destination}/$yyyy/$mm/$dd/",
@@ -159,6 +162,7 @@
     "time_period": "{time_period}",
     "time_start": "{time_start}",
     "time_end": "{time_end}",
+    "path_static" : "{path_static}",
     "time_rounding": "{time_rounding}",
     "domain_name": "{domain_name}",
     "path_app": "{path_app}",
