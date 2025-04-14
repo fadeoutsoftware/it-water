@@ -171,6 +171,7 @@
     "file_tmp": null,
     "path_tmp": "{path_app}",
     "execution_name": "{execution_name}",
-    "execution_mode": "{execution_mode}"
+    "execution_mode": "{execution_mode}",
+    "restart": "{restart}"
   }
 }

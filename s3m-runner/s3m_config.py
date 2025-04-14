@@ -4,9 +4,9 @@ import netCDF4
 
 
 
-sStaticFolder = "/mnt/nas/IT-WATER/staticS3M/present"
+sStaticFolder = "/mnt/nas/IT-WATER/S3M_static/history"
 sTemplatePath = "./s3m-runner/app_runner_workflow_s3m_template.json"
-sOutputFolder = "./s3m-runner/config/present"
+sOutputFolder = "./s3m-runner/config/history"
 
 asStaticFiles = []
 for root, dirs, files in os.walk(sStaticFolder):
