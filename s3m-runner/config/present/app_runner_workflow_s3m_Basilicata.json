@@ -35,6 +35,7 @@
           "time_run": "TIME_RUN",
           "time_restart": "TIME_RESTART",
           "time_end": "TIME_END",
+          "time_start": "TIME_START",
           "time_period": "TIME_PERIOD",
           "path_namelist": "PATH_NAMELIST",
           "restart" : "S3M_RESTART"
