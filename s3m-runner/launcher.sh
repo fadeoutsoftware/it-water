@@ -8,5 +8,5 @@ echo -----------------------------------------------------
 echo JSON PATH : 
 echo $JSON_PATH
 echo -----------------------------------------------------
-
+cd /app/exec/
 python /app/shybox/workflow/runner/app_runner_workflow_s3m_base_main.py -settings $JSON_PATH
