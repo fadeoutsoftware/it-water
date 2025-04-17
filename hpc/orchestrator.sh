@@ -1,46 +1,57 @@
 #!/bin/bash
 
-
 # ----------------------------------------------------------------------------------------
 # user arguments 
-domain_list=$1
-time_start=$2
-time_end=$3
+domains=$1
+periods=$2
+
 # ----------------------------------------------------------------------------------------
 
 echo " ===================================================================================" 
-echo " ==> Running S3M orchestrator for domains listed in "${domain_list}
+echo " ==> Running S3M orchestrator for domains listed in "${domains}" with periods from "${periods}
 
-for i in {1..20..1}
+iDomains=$(wc -l < ${domains})
+iPeriods=$(wc -l < ${periods})
+for (( j = 1; j < $iDomains; j++ )) 
 do
-    
-	domain_name=$(awk -v ArrayTaskID=$i '$1==ArrayTaskID {print $2}' $domain_list)
+	domain_name=$(awk -v ArrayTaskID=$j '$1==ArrayTaskID {print $2}' $domains)
+	for (( i = 1; i < $iPeriods; i++ )) 
+	do
+	    s3m_restart_flag=$(cat ${periods}|sed '1d'|awk -v var1=${i} 'NR==var1{print $1}')
+	    s3m_time_restart=$(cat ${periods}|sed '1d'|awk -v var1=${i} 'NR==var1{print $2}')
+	    s3m_time_start=$(cat ${periods}|sed '1d'|awk -v var1=${i} 'NR==var1{print $3}')
+	    s3m_time_end=$(cat ${periods}|sed '1d'|awk -v var1=${i} 'NR==var1{print $4}')
+	    s3m_time_period=$(cat ${periods}|sed '1d'|awk -v var1=${i} 'NR==var1{print $5}')
+	    s3m_max_time=$(cat ${periods}|sed '1d'|awk -v var1=${i} 'NR==var1{print $6}')
+	    s3m_terrdata_flag=$(cat ${periods}|sed '1d'|awk -v var1=${i} 'NR==var1{print $7}')
 
-	echo " ==> Scheduling converter reanalysis execution for domain: "${domain_name}"."
-    c1_job_id=$(sbatch --parsable converter-reanalysis.slurm ${domain_name} 1981-01-01 1981-01-15)
-	echo " ==> Converter "${domain_name}" reanalysis jobid is "${c1_job_id}"."
+		conv_time_start=${s3m_time_start:0:10}
+		conv_time_end=${s3m_time_end:0:10}
+		s3m_time_start=${s3m_time_start//T/ }
+		s3m_time_end=${s3m_time_end//T/ }
+		s3m_time_restart=${s3m_time_restart//T/ }
 
-	echo " ==> Scheduling S3M reanalysis execution form domain: "${domain_name}"."
-    s3m1_job_id=$(sbatch --parsable --dependency=afterok:$c1_job_id s3m-reanalysis.slurm ${domain_name} "1981-01-01 00:00" "1981-01-15 00:00")
-	echo " ==> S3M "${domain_name}" reanalysis jobid is "${s3m1_job_id}"."
+		echo " ==> Scheduling converter reanalysis execution for domain: "${domain_name}" "${conv_time_start}" "${conv_time_end}" ..."
+		if [ $i == 1 ]; then
+			c1_job_id=$(sbatch --parsable --time=${s3m_max_time} converter-reanalysis.slurm ${domain_name} ${conv_time_start} ${conv_time_end})
+		elif [ -v s3m1_job_id ]; then
+			c1_job_id=$(sbatch --parsable --time=${s3m_max_time} --dependency=afterok:$c1_job_id converter-reanalysis.slurm ${domain_name} ${conv_time_start} ${conv_time_end})			
+		fi
+		echo " ==> Converter reanalysis scheduled with job id "${c1_job_id}"."
 
-	#echo " ==> Scheduling converter rcp45 execution for domain: "${domain_name}"."
-    #c2_job_id=$(sbatch --parsable converter-rcp45.slurm ${domain_name} 1981-01-01 1981-01-15)
-	#echo " ==> Converter "${domain_name}" rcp45 jobid is "${c2_job_id}"."
+		echo " ==> Scheduling S3M reanalysis execution form domain: "${domain_name}" "${s3m_restart_flag}" "${s3m_terrdata_flag}" "${s3m_time_restart}" "${s3m_time_start}" "${s3m_time_end}" "${s3m_time_period}" "${s3m_max_time}" ..."
+		if [ $i == 1 ]; then
+			s3m1_job_id=$(sbatch --parsable --time=${s3m_max_time} --dependency=afterok:$c1_job_id s3m-reanalysis.slurm ${domain_name} ${s3m_restart_flag} ${s3m_terrdata_flag} "${s3m_time_restart}" "${s3m_time_start}" "${s3m_time_end}" ${s3m_time_period})
+		elif [ -v s3m1_job_id ]; then
+			s3m1_job_id=$(sbatch --parsable --time=${s3m_max_time} --dependency=afterok:$c1_job_id,$s3m1_job_id s3m-reanalysis.slurm ${domain_name} ${s3m_restart_flag} ${s3m_terrdata_flag} "${s3m_time_restart}" "${s3m_time_start}" "${s3m_time_end}" ${s3m_time_period})
+		fi
+		echo " ==> S3M reanalysis scheduled with job id "${s3m1_job_id}"."
 
-	#echo " ==> Scheduling S3M rcp45 execution form domain: "${domain_name}"."
-    #s3m2_job_id=$(sbatch --parsable --dependency=afterok:$c2_job_id s3m-rcp45.slurm ${domain_name} "1981-01-01 00:00" "1981-01-15 00:00")
-	#echo " ==> S3M "${domain_name}" rcp45 jobid is "${s3m2_job_id}"."
+				
+	done
 
-	#echo " ==> Scheduling converter rcp85 execution for domain: "${domain_name}"."
-    #c3_job_id=$(sbatch --parsable converter-rcp85.slurm ${domain_name} 1981-01-01 1981-01-15)
-	#echo " ==> Converter "${domain_name}" rcp85 jobid is "${c3_job_id}"."
-
-	#echo " ==> Scheduling S3M rcp85 execution form domain: "${domain_name}"."
-    #s3m3_job_id=$(sbatch --parsable --dependency=afterok:$c3_job_id s3m-rcp85.slurm ${domain_name} "1981-01-01 00:00" "1981-01-15 00:00")
-	#echo " ==> S3M "${domain_name}" rcp85 jobid is "${s3m3_job_id}"."
-	
 done
+
 
 echo " ==> S3M orchestrator completed, jobs scheduled with SLURM"
 echo " ===================================================================================" 
