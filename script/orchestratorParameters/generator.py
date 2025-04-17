@@ -59,7 +59,7 @@ def generateFromToWhile (startTime, endTime, stepMonths,stepDays,stepHours):
                                    (a-relativedelta(hours=+1)).strftime("%Y-%m-%dT%H:%M"), 
                                    a.strftime("%Y-%m-%dT%H:%M"),
                                    b.strftime("%Y-%m-%dT%H:%M") ,
-                                   str((b-a).total_seconds()/3600),
+                                   str(int((b-a).total_seconds()/3600)),
                                    TIME_LIMIT,
                                    str(int(not restart))))
             f.write("\n")
@@ -68,7 +68,7 @@ def generateFromToWhile (startTime, endTime, stepMonths,stepDays,stepHours):
 
 
 def main():
-    generateFromToWhile("2024-01-01 00:00","2026-01-15 00:00",0,15,0) 
+    generateFromToWhile("1981-09-01 00:00","1982-09-01 00:00",1,0,0) 
     
 
 
