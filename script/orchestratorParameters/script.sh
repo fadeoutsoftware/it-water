@@ -13,6 +13,7 @@ do
     timeEnd=$(cat ${config}|sed '1d'|awk -v var1=${i} 'NR==var1{print $4}')
     timePeriod=$(cat ${config}|sed '1d'|awk -v var1=${i} 'NR==var1{print $5}')
     slurmTimeLimit=$(cat ${config}|sed '1d'|awk -v var1=${i} 'NR==var1{print $6}')
+    S3MTerData=$(cat ${config}|sed '1d'|awk -v var1=${i} 'NR==var1{print $7}')
 
 
     echo "Launching with " 
@@ -22,4 +23,5 @@ do
     echo "End Time " ${timeEnd}
     echo "Time Period " ${timePeriod}
     echo "Slurm Time limit " ${slurmTimeLimit}
+    echo "S3M Ter Data " ${S3MTerData}
 done
