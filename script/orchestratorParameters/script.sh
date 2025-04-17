@@ -1,4 +1,4 @@
-config=./example_parameters.txt
+config=./setup.txt
 
 ## Reference file for the extraction of parameters for the orchestrator from a 
 ## specifically generated file.

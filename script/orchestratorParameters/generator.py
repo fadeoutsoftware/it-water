@@ -19,7 +19,7 @@ def generateString (iRestart, oTimeRestart, oTimeStart, oTimeEnd, oTimePeriod, o
     Returns:
         _type_: A formatted string to be parsed with awk, check script.sh for a reference example
     """
-    return iRestart + "          " + oTimeRestart + "    "+ oTimeStart + "  " + oTimeEnd +"  " + oTimePeriod + "            " + oSlurmTimeLimit + "        " + iS3MTerData
+    return iRestart + "          " + oTimeRestart + "       "+ oTimeStart + "     " + oTimeEnd +"     " + oTimePeriod + "            " + oSlurmTimeLimit + "        " + iS3MTerData
 
 
 def generateFromToWhile (startTime, endTime, stepMonths,stepDays,stepHours):
@@ -48,7 +48,6 @@ def generateFromToWhile (startTime, endTime, stepMonths,stepDays,stepHours):
         
 
         print("start " + str(oStart) + " end "+ str(oEnd))
-        # '1981-01-01 00:00' does not match format '%y-%m-%d %H:%M'
         restart = 1
         cursorTime = oStart
         increment = relativedelta(months=stepMonths,days=stepDays,hours=stepHours)
@@ -57,9 +56,9 @@ def generateFromToWhile (startTime, endTime, stepMonths,stepDays,stepHours):
             a = cursorTime 
             b = cursorTime + increment
             f.write(generateString(str(restart),
-                                   str(a-relativedelta(hours=+1)), 
-                                   str(a),
-                                   str(b) ,
+                                   (a-relativedelta(hours=+1)).strftime("%Y-%m-%dT%H:%M"), 
+                                   a.strftime("%Y-%m-%dT%H:%M"),
+                                   b.strftime("%Y-%m-%dT%H:%M") ,
                                    str((b-a).total_seconds()/3600),
                                    TIME_LIMIT,
                                    str(int(not restart))))
