@@ -2,44 +2,46 @@ import calendar
 from datetime import datetime,timedelta
 from dateutil.relativedelta import relativedelta
 
+
+
 def generateString (iRestart, oTimeRestart, oTimeStart, oTimeEnd, oTimePeriod, oSlurmTimeLimit, iS3MTerData):
+    """_summary_ Support function to generate lines for the simulation setup
+
+    Args:
+        iRestart (_type_): _description_
+        oTimeRestart (_type_): _description_
+        oTimeStart (_type_): _description_
+        oTimeEnd (_type_): _description_
+        oTimePeriod (_type_): _description_
+        oSlurmTimeLimit (_type_): _description_
+        iS3MTerData (_type_): _description_
+
+    Returns:
+        _type_: A formatted string to be parsed with awk, check script.sh for a reference example
+    """
     return iRestart + "          " + oTimeRestart + "    "+ oTimeStart + "  " + oTimeEnd +"  " + oTimePeriod + "            " + oSlurmTimeLimit + "        " + iS3MTerData
 
-### DATE AND TIME TO START WITH 
-### DELTA T PER RICAVARE RANGE DI OGNI RIGA/SIMULAZIONE
-### OCCHIO ORA ALLE DATE RESTART START END
-### RESTART SEMPRE 23:00 giorno prima DELLO START del primo giorno 
-
-def generateFromTo (startTime, endTime, stepMonths):
-    TIME_LIMIT = "0-02:00:01"
-    DATE_FORMAT = "%Y-%m-%d %H:%M"
-    with open('test.txt',"w", encoding="utf-8") as f:
-        f.write("isRestart  TimeRestart            TimeStart            TimeEnd              TimePeriod       SlurmTimeLimit    S3MTerData\n")
-        oStart= datetime.strptime(startTime, DATE_FORMAT)
-        oEnd = datetime.strptime(endTime, DATE_FORMAT)
-        
-
-        print("start " + str(oStart) + " end "+ str(oEnd))
-        # '1981-01-01 00:00' does not match format '%y-%m-%d %H:%M'
-        restart = 1
-        for i in range(1,stepMonths-1,1):
-             
-            a = oStart + relativedelta(months=+i-1)
-            b = oStart + relativedelta(months=+i) 
-            f.write(generateString(str(restart),
-                                   str(a-relativedelta(hours=+1)), 
-                                   str(a),
-                                   str(b) ,
-                                   str((b-a).total_seconds()/3600),
-                                   TIME_LIMIT,
-                                   str(int(not restart))))
-            f.write("\n")
-            restart = 0 # JUST ONCE FOR EACH SIMULATION
 
 def generateFromToWhile (startTime, endTime, stepMonths,stepDays,stepHours):
-    TIME_LIMIT = "0-02:00:01" ## Need to be calculated
+    """_summary_ Util function to generate the simulation startup parameters considering the start time and end time
+    The function consider the Monthly, daily and hourly steps specified and generate a list of lines to be parsed to launch the actual 
+    simulations.
+    This allows to obtain a file with contiguous time intervals and properly set values
+    Also the time period (hours in between the start and end of each line) and time limit is computed.
+    For the latest an heuristic is applied considering 2 hours per month of simulation
+
+    Args:
+        startTime (_type_): _description_ Stat time for the simulation in format YYYY-MM-DD HH:MM
+        endTime (_type_): _description_ End time for the simulation in format YYYY-MM-DD HH:MM
+        stepMonths (_type_): _description_ Size of the step in months
+        stepDays (_type_): _description_ Size of the step in days
+        stepHours (_type_): _description_ Size of the step in hours
+    """
+    rate = stepMonths + (stepDays/30) + (stepHours/ (24*30)) #heuristic, good enough
+    td = (timedelta(hours=2*rate) )
+    TIME_LIMIT = str(td.days)+"-"+f"{(int(td.seconds/3600)):02d}"+":00:00" ## Need to be calculated
     DATE_FORMAT = "%Y-%m-%d %H:%M"
-    with open('testWhile.txt',"w", encoding="utf-8") as f:
+    with open('setup.txt',"w", encoding="utf-8") as f:
         f.write("isRestart  TimeRestart            TimeStart            TimeEnd              TimePeriod       SlurmTimeLimit    S3MTerData\n")
         oStart= datetime.strptime(startTime, DATE_FORMAT)
         oEnd = datetime.strptime(endTime, DATE_FORMAT)
@@ -65,33 +67,9 @@ def generateFromToWhile (startTime, endTime, stepMonths,stepDays,stepHours):
             restart = 0 # JUST ONCE FOR EACH SIMULATION
             cursorTime += increment
 
-def generateOneYear (iYear, monthOfRestart):
-    TIME_LIMIT = "0-02:00:01"
-    with open('test.txt',"w", encoding="utf-8") as f:
-        f.write("isRestart  TimeRestart   TimeStart   TimeEnd     TimePeriod    SlurmTimeLimit    S3MTerData\n")
-
-        ## Suppose we start simulations at 01-01-Year
-        for i in range(1,12,1):
-            LastDayOfMonth = calendar.monthrange(iYear,i)[1]
-            TimePeriod = 24 * LastDayOfMonth
-            ### compute time limit 
-            if monthOfRestart>=1:
-                restart = 1 
-            else:
-                restart = 0
-            currentMonth = "{:02d}".format(i)
-            LastDayNumber = "{:02d}".format(LastDayOfMonth)
-            f.write(generateString(str(restart),
-                                   str(iYear-1) +"-31-12", 
-                                   str(iYear) + "-" + currentMonth + "-01",
-                                   str(iYear) + "-" + currentMonth + "-" + LastDayNumber  ,
-                                   str(TimePeriod),
-                                   TIME_LIMIT,"0"))
-            f.write("\n")
-            monthOfRestart -=1
 
 def main():
-    generateFromToWhile("2024-01-01 00:00","2026-01-15 00:00",1,15,12) 
+    generateFromToWhile("2024-01-01 00:00","2026-01-15 00:00",0,15,0) 
     
 
 
