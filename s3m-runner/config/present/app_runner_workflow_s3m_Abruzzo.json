@@ -23,7 +23,8 @@
           "file_log": "{execution_name}_{domain_name}.log",
           "execution_name": "exec_base_s3m",
           "execution_mode": "deterministic",
-          "restart": 0
+          "restart": 0,
+          "tick_from_terr_data": 1
         },
         "environment": {
           "domain_name": "DOMAIN_NAME",
@@ -39,7 +40,8 @@
           "time_start": "TIME_START",
           "time_period": "TIME_PERIOD",
           "path_namelist": "PATH_NAMELIST",
-          "restart" : "S3M_RESTART"
+          "restart" : "S3M_RESTART",
+          "tick_from_terr_data" : "S3M_TERR_DATA"
         }
       },
       "format": {
@@ -62,7 +64,8 @@
         "file_namelist": "string",
         "execution_name": "string",
         "execution_mode": "string",
-        "restart": "int"
+        "restart": "int",
+        "tick_from_terr_data": "int"
       },
       "template": {
         "domain_name": "string",
@@ -84,7 +87,8 @@
         "file_namelist": "string",
         "execution_name": "string",
         "execution_mode": "string",
-        "restart": "int"
+        "restart": "int",
+        "tick_from_terr_data": "int"
       }
     }
   },
@@ -110,7 +114,7 @@
         "sTimeRestart": "{time_restart}",
         "iSimLength": "{time_period}",
         "iFlagRestart": "{restart}",
-        "iFlagThickFromTerrData": "{restart}",  
+        "iFlagThickFromTerrData": "{tick_from_terr_data}",  
         "iFlagSnowAssim": 0,
         "iFlagIceMassBalance": 2,
         "iFlagGlacierDebris": 1,
@@ -180,6 +184,7 @@
     "path_tmp": "{path_tmp}",
     "execution_name": "{execution_name}",
     "execution_mode": "{execution_mode}",
-    "restart": "{restart}"
+    "restart": "{restart}",
+    "tick_from_terr_data": "{tick_from_terr_data}"
   }
 }
