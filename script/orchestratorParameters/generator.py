@@ -42,7 +42,7 @@ def generateFromToWhile (startTime, endTime, stepMonths,stepDays,stepHours):
     TIME_LIMIT = str(td.days)+"-"+f"{(int(td.seconds/3600)):02d}"+":00:00" ## Need to be calculated
     DATE_FORMAT = "%Y-%m-%d %H:%M"
     with open('setup.txt',"w", encoding="utf-8") as f:
-        f.write("isRestart  TimeRestart            TimeStart            TimeEnd              TimePeriod       SlurmTimeLimit    S3MTerData\n")
+        f.write("isRestart  TimeRestart            TimeStart            TimeEnd              TimePeriod     SlurmTimeLimit    S3MTerData\n")
         oStart= datetime.strptime(startTime, DATE_FORMAT)
         oEnd = datetime.strptime(endTime, DATE_FORMAT)
         
@@ -55,20 +55,20 @@ def generateFromToWhile (startTime, endTime, stepMonths,stepDays,stepHours):
             
             a = cursorTime 
             b = cursorTime + increment
-            f.write(generateString(str(restart),
+            f.write(generateString(str(int(not restart)),
                                    (a-relativedelta(hours=+1)).strftime("%Y-%m-%dT%H:%M"), 
                                    a.strftime("%Y-%m-%dT%H:%M"),
                                    b.strftime("%Y-%m-%dT%H:%M") ,
-                                   str((b-a).total_seconds()/3600),
+                                   str(int((b-a).total_seconds()/3600)),
                                    TIME_LIMIT,
-                                   str(int(not restart))))
+                                   str(restart)))
             f.write("\n")
             restart = 0 # JUST ONCE FOR EACH SIMULATION
             cursorTime += increment
 
 
 def main():
-    generateFromToWhile("2024-01-01 00:00","2026-01-15 00:00",0,15,0) 
+    generateFromToWhile("1981-09-01 00:00","1982-09-01 00:00",1,0,0) 
     
 
 
