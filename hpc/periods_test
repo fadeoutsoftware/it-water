@@ -1,0 +1,3 @@
+isRestart  TimeRestart            TimeStart            TimeEnd              TimePeriod       SlurmTimeLimit    S3MTerData
+0          1984-08-31T23:00       1984-09-01T00:00     1984-10-01T00:00     720              0-02:00:00        1
+1          1984-09-30T23:00       1984-10-01T00:00     1984-11-01T00:00     744              0-02:00:00        0

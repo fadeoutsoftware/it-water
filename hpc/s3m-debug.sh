@@ -15,7 +15,7 @@ path_app="/g100_work/IscrC_IT-WATER/s3m/reanalysis"
 path_input="/g100_work/IscrC_IT-WATER/S3M_input/reanalysis/"
 path_destination="/g100_work/IscrC_IT-WATER/S3M_output/reanalysis/"
 path_log="/g100_work/IscrC_IT-WATER/S3M_logs/reanalysis/"
-path_static="/g100_work/IscrC_IT-WATER/S3M_static/history/"${domain_name}
+path_static="/g100_work/IscrC_IT-WATER/S3M_static/history"
 path_config="/g100_work/IscrC_IT-WATER/S3M_config/history"
 # ----------------------------------------------------------------------------------------
 
@@ -30,18 +30,16 @@ singularity exec --writable-tmpfs \
  --env PATH_TMP=/app/exec/data/tmp/${domain_name} \
  --env PATH_LOG=/app/exec/data/logs/${domain_name} \
  --env PATH_NAMELIST=/app/exec \
- --env PATH_STATIC=/app/exec/data/static/ \
+ --env PATH_STATIC=/app/exec/data/static/${domain_name} \
  --env DOMAIN_NAME=${domain_name} \
  --env JSON_PATH=/app/exec/data/config/app_runner_workflow_s3m_${domain_name}.json \
- --env S3M_RESTART=${restart} \
- --env S3M_TERR_DATA=${terr_data} \
+ --env S3M_RESTART=0 \
+ --env S3M_TERR_DATA=1 \
  --env TIME_RUN="${time_start}" \
- --env TIME_RESTART="${time_restart}" \
+ --env TIME_RESTART="${time_start}" \
  --env TIME_START="${time_start}" \
  --env TIME_END="${time_end}" \
- --env TIME_PERIOD=${time_period} \
- --bind ${path_data}:/app/exec/data/,${path_input}:/app/exec/data/input,${path_destination}:/app/exec/data/output,${path_config}:/app/exec/data/config,${path_static}:/app/exec/data/static,${path_log}:/app/exec/data/logs,\
+ --env TIME_PERIOD=720 \
+ --bind ${path_app}:/app/exec/,${path_data}:/app/exec/data/,${path_input}:/app/exec/data/input,${path_destination}:/app/exec/data/output,${path_config}:/app/exec/data/config,${path_static}:/app/exec/data/static,${path_log}:/app/exec/data/logs,\
  s3m.sif /app/shybox/workflow/runner/launcher.sh
 
-echo " ==> Completed S3M for "${domain_name}" [JOB ID "${SLURM_JOBID}"]"
-echo " ===================================================================================" 

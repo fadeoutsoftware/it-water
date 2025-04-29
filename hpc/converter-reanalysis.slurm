@@ -4,7 +4,7 @@
 # SLURM directives
 #SBATCH --ntasks=1
 #SBATCH --mem=8G
-#SBATCH --output=/g100_work/IscrC_IT-WATER/S3M_converter_logs/reanalysis/out/converter_%A.out
+#SBATCH --output=/g100_scratch/userexternal/mmenapac/shared/S3M_converter_logs/reanalysis/out/converter_%A.out
 #SBATCH --partition=g100_usr_prod
 #SBATCH --time=0-01:00:00			 	 # Time limit days-hrs:min:sec
 # ----------------------------------------------------------------------------------------
@@ -20,8 +20,8 @@ time_end=$3
 # folders
 path_data="/g100_work/IscrC_IT-WATER/converter/reanalysis"
 path_input="/g100_work/IscrC_IT-WATER/data_CMCC/reanalysis/"
-path_destination="/g100_work/IscrC_IT-WATER/S3M_input/reanalysis/"
-path_log="/g100_work/IscrC_IT-WATER/S3M_converter_logs/reanalysis/"
+path_destination="/g100_scratch/userexternal/mmenapac/shared/S3M_input/reanalysis/"
+path_log="/g100_scratch/userexternal/mmenapac/shared/S3M_converter_logs/reanalysis/"
 path_geo="/g100_work/IscrC_IT-WATER/S3M_static/asc/"
 # ----------------------------------------------------------------------------------------
 
