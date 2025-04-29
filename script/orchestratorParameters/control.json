@@ -1,0 +1,9 @@
+{
+    "startTime": "1983-03-01 00:00",
+    "stepMonths": 3,
+    "stepDays": 0,
+    "stepHours": 0,
+    "numSteps": 1,
+    "outputFileName": "periods",
+    "restart": 0
+}
