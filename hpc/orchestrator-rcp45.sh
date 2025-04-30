@@ -46,13 +46,14 @@ do
 			s3m1_job_id=$(sbatch --parsable --time=${s3m_max_time} --dependency=afterok:$c1_job_id,$s3m1_job_id s3m-rcp45.slurm ${domain_name} ${s3m_restart_flag} ${s3m_terrdata_flag} "${s3m_time_restart}" "${s3m_time_start}" "${s3m_time_end}" ${s3m_time_period})
 		fi
 		echo " ==> S3M rcp45 scheduled with job id "${s3m1_job_id}"."
+# Accumulate jobid of S3M in an array
 
-				
 	done
 
-  
 done
 
+# Schedule another launch with a dependency to the jobIds of S3M accumulated above
+# To do this regenerate periods file with the generator
 
 
 

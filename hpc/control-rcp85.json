@@ -1,0 +1,9 @@
+{
+    "startTime": "2003-09-01 00:00",
+    "stepMonths": 3,
+    "stepDays": 0,
+    "stepHours": 0,
+    "numSteps": 1,
+    "outputFileName": "periods_rcp45",
+    "restart": 1
+}
