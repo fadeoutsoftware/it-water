@@ -248,8 +248,8 @@ WORKDIR /app/shybox/workflow/merger
 COPY venvSetup.sh /app/shybox/workflow/merger
 RUN /app/shybox/workflow/merger/venvSetup.sh
 
-COPY app_merger_by_domain_workflow_s3m_base.json /app/shybox/workflow/merger
-COPY app_merger_by_domain_workflow_s3m_base_main.py /app/shybox/workflow/merger
+COPY app_merger_by_time_workflow_s3m_base.json /app/shybox/workflow/merger
+COPY app_merger_by_time_workflow_s3m_base_main.py /app/shybox/workflow/merger
 
 COPY launcher.sh /app/shybox/workflow/merger
 ENTRYPOINT ["./launcher.sh"]

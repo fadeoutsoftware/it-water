@@ -1,1 +1,1 @@
-docker build --progress=plain -t it-water/merger:dev . 
+docker build --progress=plain -t it-water/mergertime:dev . 

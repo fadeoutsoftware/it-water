@@ -9,7 +9,7 @@ dos2unix ./app_runner_workflow_s3m_base.json
 dos2unix ./venvSetup.sh
 
 # Build docker image
-docker build --progress=plain -t it-water/s3m-runner:dev .
+docker build --no-cache --progress=plain -t it-water/s3m-runner:dev .
 # Save image in tar format 
 docker save it-water/s3m-runner:dev -o s3m.tar
 # Convert to singularity 
