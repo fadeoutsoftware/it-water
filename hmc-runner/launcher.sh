@@ -1,9 +1,12 @@
 #!/bin/bash -e
-
-source $PYTHON_ENV_FILE
-
+cd $CONDA_PATH 
+cd bin 
+source activate shybox_base_libraries
+cd /app/shybox/workflow/runner
 export PYTHONPATH="${PYTHONPATH}:/app/shybox"
-
-pip install tabulate
-
-python /app/shybox/workflow/runner/app_runner_workflow_hmc_base_main.py -settings /app/shybox/workflow/runner/app_runner_workflow_hmc_base.json
+echo -----------------------------------------------------
+echo JSON PATH : 
+echo $JSON_PATH
+echo -----------------------------------------------------
+cd /app/exec/
+python /app/shybox/workflow/runner/app_runner_workflow_hmc_base_main.py -settings $JSON_PATH
