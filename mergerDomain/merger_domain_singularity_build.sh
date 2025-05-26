@@ -1,10 +1,10 @@
 
 #cleanup previous versions 
-rm merger.sif
-rm merger.tar
+rm mergerDomain.sif
+rm mergerDomain.tar
 # Build docker image
-docker build --progress=plain -t it-water/merger:dev .
+docker build --progress=plain -t it-water/mergerDomain:dev .
 # Save image in tar format 
-docker save it-water/merger -o merger.tar
+docker save it-water/mergerDomain -o mergerDomainDomain.tar
 # Convert to singularity 
-singularity build merger.sif docker-archive://merger.tar
+singularity build mergerDomain.sif docker-archive://mergerDomain.tar
