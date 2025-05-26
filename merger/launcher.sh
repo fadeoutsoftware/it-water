@@ -1,7 +1,10 @@
 #!/bin/bash -e
-
-source $PYTHON_ENV_FILE
-
+cd $CONDA_PATH 
+cd bin 
+source activate shybox_base_libraries
+cd /app/shybox/workflow/merger
 export PYTHONPATH="${PYTHONPATH}:/app/shybox"
 
-python workflow/dataset/mergeapp_dataset_workflow_merge_grid_main.py -settings workflow/dataset/merge/app_dataset_workflow_merge_grid_nc_example.json
+
+
+python /app/shybox/workflow/merger/app_merger_by_domain_workflow_s3m_base_main.py -settings /app/shybox/workflow/merger/app_merger_by_domain_workflow_s3m_base.json
