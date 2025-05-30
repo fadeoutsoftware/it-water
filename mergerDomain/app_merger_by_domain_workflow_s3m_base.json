@@ -75,8 +75,26 @@
     "application": {
       "info": {
         "domain_name": [
+          "Abruzzo",
+          "Calabria",
+          "Emilia_Romagna",
+          "Lazio",
+          "Lombardia",
+          "Molise",
+          "Puglia",
+          "Sicilia",
+          "Trentino_Alto_Adige",
+          "Valle_Aosta",
+          "Basilicata",
+          "Campania",
+          "Friuli_Venezia_Giulia",
+          "Liguria",
           "Marche",
-          "Emilia_Romagna"
+          "Piemonte",
+          "Sardegna",
+          "Toscana",
+          "Umbria",
+          "Veneto"
         ]
       },
       "time": {
