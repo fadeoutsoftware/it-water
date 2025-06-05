@@ -111,13 +111,86 @@
       },
       "data_source": {
         "dset_01": {
-          "path": "{path_source}/Marche/%Y/%m/%d/",
+          "path": "{path_source}/Abruzzo/%Y/%m/%d/",
           "file_name": "S3M_%Y%m%d%H00.nc.gz"
         },
         "dset_02": {
-          "path": "{path_source}/Emilia_Romagna/%Y/%m/%d",
+          "path": "{path_source}/Calabria/%Y/%m/%d",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_03": {
+          "path": "{path_source}/Lazio/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_04": {
+          "path": "{path_source}/Lombardia/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_05": {
+          "path": "{path_source}/Molise/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_06": {
+          "path": "{path_source}/Puglia/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_07": {
+          "path": "{path_source}/Sicilia/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_08": {
+          "path": "{path_source}/Trentino_Alto_Adige/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_09": {
+          "path": "{path_source}/Valle_Aosta/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_10": {
+          "path": "{path_source}/Basilicata/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_11": {
+          "path": "{path_source}/Campania/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_12": {
+          "path": "{path_source}/Friuli_Venezia_Giulia/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_13": {
+          "path": "{path_source}/Liguria/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_14": {
+          "path": "{path_source}/Marche/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_15": {
+          "path": "{path_source}/Piemonte/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_16": {
+          "path": "{path_source}/Sardegna/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_17": {
+          "path": "{path_source}/Toscana/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_18": {
+          "path": "{path_source}/Umbria/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_19": {
+          "path": "{path_source}/Veneto/%Y/%m/%d/",
+          "file_name": "S3M_%Y%m%d%H00.nc.gz"
+        },
+        "dset_20": {
+          "path": "{path_source}/Emilia_Romagna/%Y/%m/%d/",
           "file_name": "S3M_%Y%m%d%H00.nc.gz"
         }
+
       },
       "data_destination": {
         "dset_01": {
