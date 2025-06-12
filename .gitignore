@@ -3,4 +3,6 @@
 *.sif
 /data
 
-*.tar
+*.tar
+
+__pycache__
