@@ -119,27 +119,30 @@ def pool_handler():
 ###TIME_END='2003-10-15 23:00'
 #above from ENV
     TIME_START = os.environ.get('TIME_START')
+    print("time start %s",TIME_START)
     if TIME_START is None:
         raise EnvironmentError("TIME_START environment variable not set")
     TIME_END = os.environ.get('TIME_END')
+    print("time end %s",TIME_END)
     if TIME_END is None:
         raise EnvironmentError("TIME_END environment variable not set")
 
     iCoreCount = os.cpu_count()
+    print ("core count %s", iCoreCount)
     p = Pool(iCoreCount)
     intervals = split_datetime_intervals(TIME_START,TIME_END,iCoreCount)
-    
-    p.map(main, None, intervals[0],intervals[1]) 
+    print("intervals %s", intervals)
+    p.map(main, intervals) 
 
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 # script main
-def main(alg_collectors_settings: dict = None, timeStart: str ="",timeEnd: str =""):
+def main(work_data):
 
     
-    if timeStart == "" or timeEnd =="":
-        raise Exception("Missing parameters for start/end date")
+    if work_data[0] == "" or work_data[1] =="":
+        raise Exception("Parallel execution : Missing parameters for start/end date")
         
     # ------------------------------------------------------------------------------------------------------------------
     # get file settings
@@ -147,7 +150,7 @@ def main(alg_collectors_settings: dict = None, timeStart: str ="",timeEnd: str =
 
     # method to initialize settings class
     driver_settings = DrvSettings(file_name=alg_file_settings, file_time=alg_time_settings,
-                                  file_key='settings', settings_collectors=alg_collectors_settings)
+                                  file_key='settings', settings_collectors=None)
 
     # method to configure variable settings
     (alg_variables_settings,
@@ -209,8 +212,8 @@ def main(alg_collectors_settings: dict = None, timeStart: str ="",timeEnd: str =
     # ------------------------------------------------------------------------------------------------------------------
     # method to organize time information
     alg_sim_time = select_time_range(
-        time_start=timeStart,
-        time_end=timeEnd,
+        time_start=work_data[0],
+        time_end=work_data[1],
         time_frequency=alg_variables_application['time']['frequency'])
     alg_sim_time = select_time_format(alg_sim_time, time_format=alg_variables_application['time']['format'])
     # ------------------------------------------------------------------------------------------------------------------

@@ -52,6 +52,7 @@ def work_log(work_data):
 def pool_handler(intervals):
     
     p = Pool(os.cpu_count())
+    print("intervals" , intervals)
     p.map(work_log, intervals)
 
 
