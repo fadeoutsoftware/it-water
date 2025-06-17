@@ -128,7 +128,6 @@ def pool_handler():
         raise EnvironmentError("TIME_END environment variable not set")
 
     iCoreCount = os.cpu_count()
-    iCoreCount = int(iCoreCount / 2)
     print ("core count %s", iCoreCount)
     p = Pool(iCoreCount)
     intervals = split_datetime_intervals(TIME_START,TIME_END,iCoreCount)
