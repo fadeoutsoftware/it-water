@@ -332,7 +332,7 @@ def create_src_dataset(file_name: str, file_path: str, file_time: pd.Timestamp) 
 # call script from external library
 if __name__ == "__main__":
     # run script
-    main()
+    pool_handler()
 # ----------------------------------------------------------------------------------------------------------------------
 
 
