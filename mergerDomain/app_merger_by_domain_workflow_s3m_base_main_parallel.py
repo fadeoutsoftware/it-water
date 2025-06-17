@@ -92,6 +92,9 @@ def split_datetime_intervals(start_date: str, end_date: str, num_intervals: int)
     """
 
     fmt = "%Y-%m-%d %H:%M"
+    # strip single quotes? 
+    start_date = start_date.strip("'")
+    end_date = end_date.strip("'")
     dt_start = datetime.strptime(start_date, fmt)
     dt_end = datetime.strptime(end_date, fmt)
     if num_intervals < 1:
