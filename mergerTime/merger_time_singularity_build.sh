@@ -5,6 +5,6 @@ rm mergertime.tar
 # Build docker image
 docker build --no-cache --progress=plain -t it-water/mergertime:dev .
 # Save image in tar format 
-docker save it-water/mergertime -o mergertime.tar
+docker save it-water/mergertime:dev -o mergertime.tar
 # Convert to singularity 
 singularity build mergertime.sif docker-archive://mergertime.tar

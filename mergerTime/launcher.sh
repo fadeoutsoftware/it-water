@@ -7,4 +7,4 @@ export PYTHONPATH="${PYTHONPATH}:/app/shybox"
 
 
 
-python /app/shybox/workflow/merger/app_merger_by_domain_workflow_s3m_base_main.py -settings /app/shybox/workflow/merger/app_merger_by_domain_workflow_s3m_base.json
+python /app/shybox/workflow/merger/app_merger_by_domain_workflow_s3m_base_main_parallel.py -settings /app/shybox/workflow/merger/app_merger_by_domain_workflow_s3m_base.json
