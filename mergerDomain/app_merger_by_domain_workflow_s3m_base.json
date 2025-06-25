@@ -195,11 +195,11 @@
       "data_destination": {
         "dset_01": {
           "path": "{path_destination}/%Y/%m/%d/",
-          "file_name": "age.%Y%m%d%H%M.tiff",
+          "file_name": "REff.%Y%m%d%H%M.tiff",
           "format": "geotiff",
           "type": null,
           "mode": "grid",
-          "variable": "age",
+          "variable": "REff",
           "dims_geo": {
             "longitude": "longitude",
             "latitude": "latitude"
@@ -209,7 +209,7 @@
             "latitude": "longitude"
           },
           "vars_data": {
-            "snow_age": "SNOW_AGE"
+            "effective_rainfall": "EFFECTIVE_RAINFALL"
           }
         },
         "dset_02": {
