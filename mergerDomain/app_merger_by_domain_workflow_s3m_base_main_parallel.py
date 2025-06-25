@@ -199,7 +199,7 @@ def main(work_data):
                     {"function": "merge_data_by_ref", "method": 'nn', "max_distance": 25000, "neighbours": 7, "fill_value": np.nan},
                     {"function": "mask_data_by_ref", "ref_value": -9999, "mask_no_data": np.nan}
                 ],
-                "albedo": [
+                "SnowMask": [
                     {"function": "merge_data_by_ref", "method": 'nn', "max_distance": 25000, "neighbours": 7,
                      "fill_value": np.nan},
                     {"function": "mask_data_by_ref", "ref_value": -9999, "mask_no_data": np.nan}
@@ -320,11 +320,11 @@ def create_src_dataset(file_name: str, file_path: str, file_time: pd.Timestamp) 
     data_obj = DataLocal(
         path=file_path,
         file_name=file_name,
-        file_format="netcdf", file_mode=None, file_variable=['age', 'albedo'],
+        file_format="netcdf", file_mode=None, file_variable=['age', 'SnowMask'],
         file_template={
             "dims_geo": {"X": "longitude", "Y": "latitude", "time": "time"},
             'coords_geo': {'Longitude': 'longitude', 'Latitude': 'latitude'},
-            "vars_data": {"AgeS": "snow_age", "AlbedoS": "snow_albedo"}
+            "vars_data": {"AgeS": "snow_age", "SnowMask": "snow_mask"}
         },
         time_signature='current',
         time_reference=file_time, time_period=1, time_freq='h', time_direction='forward',

@@ -214,11 +214,11 @@
         },
         "dset_02": {
           "path": "{path_destination}/%Y/%m/%d/",
-          "file_name": "albedo.%Y%m%d%H%M.tiff",
+          "file_name": "SnowMask.%Y%m%d%H%M.tiff",
           "format": "geotiff",
           "type": null,
           "mode": "grid",
-          "variable": "albedo",
+          "variable": "SnowMask",
           "dims_geo": {
             "longitude": "longitude",
             "latitude": "latitude"
@@ -228,7 +228,7 @@
             "latitude": "longitude"
           },
           "vars_data": {
-            "snow_albedo": "SNOW_ALBEDO"
+            "snow_mask": "SNOW_MASK"
           }
         }
       },
