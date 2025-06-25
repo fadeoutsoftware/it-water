@@ -167,11 +167,14 @@ def main(work_data):
 
     # collector data
     collector_data.view(table_print=False)
+    
+    # support variable used to compose log file with start time and end time (required for each process)
+    log_file_name = alg_variables_settings['file_log'] + "_" + work_data[0] + " " + work_data[1] + ".log"
 
     # set logging stream
     set_logging_stream(
         logger_name=logger_name, logger_format=logger_format,
-        logger_folder=alg_variables_settings['path_log'], logger_file=alg_variables_settings['file_log'])
+        logger_folder=alg_variables_settings['path_log'], logger_file=log_file_name)
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------

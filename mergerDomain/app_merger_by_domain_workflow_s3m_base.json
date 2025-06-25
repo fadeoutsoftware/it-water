@@ -17,7 +17,7 @@
           "time_rounding": "D",
           "time_frequency": "D",
           "time_direction": "forward",
-          "file_log": "{execution_name}_{domain_name}.log",
+          "file_log": "{execution_name}",
           "execution_name": "dataset_base",
           "execution_mode": "history"
         },
