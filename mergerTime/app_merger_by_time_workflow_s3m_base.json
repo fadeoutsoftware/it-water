@@ -94,21 +94,21 @@
       "data_source": {
         "dset_01": {
           "path": "{path_source}/%Y/%m/%d/",
-          "file_name": "age.%Y%m%d%H%M.tiff"
+          "file_name": "REff.%Y%m%d%H%M.tiff"
         },
         "dset_02": {
           "path": "{path_source}/%Y/%m/%d/",
-          "file_name": "albedo.%Y%m%d%H%M.tiff"
+          "file_name": "SnowMask.%Y%m%d%H%M.tiff"
         }
       },
       "data_destination": {
         "dset_01": {
-          "path": "{path_destination}/%Y/%m/%d/",
-          "file_name": "AGE_%Y%m%d.nc",
+          "path": "{path_destination}/REff/%Y/",
+          "file_name": "REff_%Y%m%d.nc",
           "format": "netcdf",
           "type": "itwater",
           "mode": "grid",
-          "variable": "age",
+          "variable": "REff",
           "dims_geo": {
             "longitude": "longitude",
             "latitude": "latitude"
@@ -118,16 +118,16 @@
             "latitude": "longitude"
           },
           "vars_data": {
-            "snow_age": "SNOW_AGE"
+            "effective_rainfall": "EFFECTIVE_RAINFALL"
           }
         },
         "dset_02": {
-          "path": "{path_destination}/%Y/%m/%d/",
-          "file_name": "ALBEDO_%Y%m%d.nc",
+          "path": "{path_destination}/SnowMask/%Y/",
+          "file_name": "SnowMask_%Y%m%d.nc",
           "format": "netcdf",
           "type": "itwater",
           "mode": "grid",
-          "variable": "albedo",
+          "variable": "SnowMask",
           "dims_geo": {
             "longitude": "longitude",
             "latitude": "latitude"
@@ -137,7 +137,7 @@
             "latitude": "longitude"
           },
           "vars_data": {
-            "snow_albedo": "SNOW_ALBEDO"
+            "snow_mask": "SNOW_MASK"
           }
         }
       },

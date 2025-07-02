@@ -245,7 +245,7 @@ def main(work_data):
             file_template={
                 "dims_geo": {"X": "longitude", "Y": "latitude", "time": "time"},
                 'coords_geo': {'Longitude': 'longitude', 'Latitude': 'latitude'},
-                "vars_data": {"snow_age": "snow_age"}
+                "vars_data": {"REff": "effective_rainfall", "SnowMask": "snow_mask"}
             },
             time_signature='current',
             time_reference=start_data_time, time_period=1, time_freq='h', time_direction='forward',

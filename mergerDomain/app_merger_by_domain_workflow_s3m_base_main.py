@@ -252,7 +252,7 @@ def create_src_dataset(file_name: str, file_path: str, file_time: pd.Timestamp) 
         file_template={
             "dims_geo": {"X": "longitude", "Y": "latitude", "time": "time"},
             'coords_geo': {'Longitude': 'longitude', 'Latitude': 'latitude'},
-            "vars_data": {"AgeS": "snow_age", "AlbedoS": "snow_albedo"}
+            "vars_data": {"REff": "effective_rainfall", "SnowMask": "snow_mask"}
         },
         time_signature='current',
         time_reference=file_time, time_period=1, time_freq='h', time_direction='forward',
