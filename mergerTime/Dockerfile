@@ -1,10 +1,6 @@
 # root image, base on LTS ubuntu
 FROM ubuntu:24.04 AS builder
 
-# image labels
-# TODO
-
-
 ARG DEBIAN_FRONTEND=noninteractive
 
 
