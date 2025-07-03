@@ -31,6 +31,16 @@ m.menapace@fadeout.it scratch directory is :
 
 wget https://github.com/sylabs/singularity/releases/download/v3.11.5/singularity-ce_3.11.5-focal_amd64.deb
 sudo apt install uidmap
+
+sudo apt-get update && sudo apt-get install -y \
+    build-essential \
+    libssl-dev \
+    uuid-dev \
+    libgpgme11-dev \
+    squashfs-tools \
+    libseccomp-dev \
+    pkg-config
+    
 dpkg -i singularity-ce_3.11.5-focal_amd64.deb
 
 
