@@ -51,7 +51,7 @@ from shybox.dataset_toolkit.dataset_handler_local import DataLocal
 # fx imported in the PROCESSES (will be used in the global variables PROCESSES) --> DO NOT REMOVE
 from shybox.processing_toolkit.lib_proc_mask import mask_data_by_ref, mask_data_by_limits
 from shybox.processing_toolkit.lib_proc_interp import interpolate_data
-from shybox.processing_toolkit.lib_proc_merge import merge_data
+from shybox.processing_toolkit.lib_proc_merge import merge_data_by_ref
 
 # set logger
 logger_stream = logging.getLogger(logger_name)
@@ -123,7 +123,7 @@ def main(alg_collectors_settings: dict = None):
                 "tmp_dir": "tmp"
             },
             "process_list": {
-                "age": [
+                "REff": [
                     {"function": "merge_data_by_time"}
                 ]
             }
@@ -174,7 +174,7 @@ def main(alg_collectors_settings: dict = None):
         data_src_obj = DataLocal(
             path=data_src_settings['path'],
             file_name=data_src_settings['file_name'],
-            file_format="geotiff", file_mode=None, file_variable=['age'],
+            file_format="geotiff", file_mode=None, file_variable=['REff'],
             file_template={
                 "dims_geo": {"X": "longitude", "Y": "latitude", "time": "time"},
                 'coords_geo': {'Longitude': 'longitude', 'Latitude': 'latitude'},
