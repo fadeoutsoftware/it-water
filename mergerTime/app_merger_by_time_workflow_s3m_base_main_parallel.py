@@ -43,6 +43,7 @@ import time
 
 import numpy as np
 import pandas as pd
+from multiprocessing import Pool
 
 from shybox.generic_toolkit.lib_utils_args import get_args
 from shybox.generic_toolkit.lib_utils_logging import set_logging_stream
@@ -61,15 +62,20 @@ from shybox.dataset_toolkit.dataset_handler_local import DataLocal
 # fx imported in the PROCESSES (will be used in the global variables PROCESSES) --> DO NOT REMOVE
 from shybox.processing_toolkit.lib_proc_mask import mask_data_by_ref, mask_data_by_limits
 from shybox.processing_toolkit.lib_proc_interp import interpolate_data
-from shybox.processing_toolkit.lib_proc_merge import merge_data
+from shybox.processing_toolkit.lib_proc_merge import merge_data_by_ref
 
-def split_datetime_intervals(start_date: str, end_date: str, num_intervals: int):
+# Util library to manage intervals
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+
+
+def split_datetime_in_days(start_date: str, end_date: str):
     """
-    Split the interval between start_date and end_date into num_intervals equally spaced datetime strings.
+    Split the interval between start_date and end_date in daily intervals, forcing the beginning to 00:00
+    and the end to 23:00
     Args:
         start_date (str): Start date in "%Y-%m-%d %H:%M" format.
         end_date (str): End date in "%Y-%m-%d %H:%M" format.
-        num_intervals (int): Number of intervals (number of points will be num_intervals + 1).
     Returns:
         List[str]: List of datetime strings in "%Y-%m-%d %H:%M" format.
     """
@@ -80,17 +86,18 @@ def split_datetime_intervals(start_date: str, end_date: str, num_intervals: int)
     end_date = end_date.strip("'")
     dt_start = datetime.strptime(start_date, fmt)
     dt_end = datetime.strptime(end_date, fmt)
+    num_intervals = (dt_end - dt_start).days
     if num_intervals < 1:
         raise ValueError("num_intervals must be >= 1")
-    total_seconds = (dt_end - dt_start).total_seconds()
-    step = total_seconds / num_intervals
     result = []
     for i in range(num_intervals):
         array = [] 
-        dstart = dt_start + timedelta(seconds=(i) * step)
+        dstart = dt_start + timedelta(days=(i))
         dstart = dstart.replace(minute=0)
-        dend = dt_start + timedelta(seconds=(i+1) * step) 
+        dstart = dstart.replace(hour=0)
+        dend = dt_start + timedelta(days=(i)) 
         dend = dend.replace(minute=0)
+        dend = dend.replace(hour=23)
         array.append(dstart.strftime(fmt))
         array.append(dend.strftime(fmt))
         result.append(array)
@@ -111,9 +118,10 @@ def pool_handler():
 
     iCoreCount = os.cpu_count()
     print ("core count %s", iCoreCount)
-    p = Pool(iCoreCount)
-    intervals = split_datetime_intervals(TIME_START,TIME_END,iCoreCount)
+    
+    intervals = split_datetime_in_days(TIME_START,TIME_END)
     print("intervals %s", intervals)
+    p = Pool(len(intervals))
     p.map(main, intervals) 
 
 # set logger
@@ -139,13 +147,15 @@ def main(work_data):
     
     if work_data[0] == "" or work_data[1] =="":
         raise Exception("Parallel execution : Missing parameters for start/end date")
+    
+    print("Work data "+ work_data[0] +" and "+work_data[1]  )
     # ------------------------------------------------------------------------------------------------------------------
     # get file settings
     alg_file_settings, alg_time_settings = get_args(settings_folder=os.path.dirname(os.path.realpath(__file__)))
 
     # method to initialize settings class
     driver_settings = DrvSettings(file_name=alg_file_settings, file_time=alg_time_settings,
-                                  file_key='settings', settings_collectors=alg_collectors_settings)
+                                  file_key='settings', settings_collectors=None)
 
     # method to configure variable settings
     (alg_variables_settings,
@@ -163,10 +173,13 @@ def main(work_data):
     # collector data
     collector_data.view(table_print=False)
 
+    # support variable used to compose log file with start time and end time (required for each process)
+    log_file_name = alg_variables_settings['file_log'] + "_" + work_data[0] + " " + work_data[1] + ".log"
+
     # set logging stream
     set_logging_stream(
         logger_name=logger_name, logger_format=logger_format,
-        logger_folder=alg_variables_settings['path_log'], logger_file=alg_variables_settings['file_log'])
+        logger_folder=alg_variables_settings['path_log'], logger_file=log_file_name)
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -206,7 +219,7 @@ def main(work_data):
         time_frequency=alg_variables_application['time']['frequency'])
     alg_sim_time = select_time_format(alg_sim_time, time_format=alg_variables_application['time']['format'])
     # ------------------------------------------------------------------------------------------------------------------
-
+    print("alg_sim_time " + alg_sim_time)
     # ------------------------------------------------------------------------------------------------------------------
     # define geo obj
     geo_data = DataLocal(
@@ -224,7 +237,9 @@ def main(work_data):
     # ------------------------------------------------------------------------------------------------------------------
     # time iteration(s)
     for sim_time in alg_sim_time:
-
+        print ("sim time" + sim_time)
+        print (alg_data_time[0])
+        print(alg_data_time[-1])
         # time source data
         alg_data_time = select_time_range(
             time_start=sim_time,
