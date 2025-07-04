@@ -88,11 +88,11 @@
       "geo": {
         "terrain": {
           "path": "{path_geo}",
-          "file_name": "marche.dem.txt"
+          "file_name": "grid_005_fpItalia.txt"
         }
       },
       "data_source": {
-        "dset_01": {
+        "dset": {
           "path": "{path_source}/%Y/%m/%d/",
           "file_name": "REff.%Y%m%d%H%M.tiff"
         },
