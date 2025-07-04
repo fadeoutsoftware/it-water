@@ -33,7 +33,7 @@ do
 		s3m_time_end=${s3m_time_end//T/ }
 		s3m_time_restart=${s3m_time_restart//T/ }
 
-		echo " ==> Scheduling converter reanalysis execution for domain: "${domain_name}" "${conv_time_start}" "${conv_time_end}" ..."
+		echo " ==> Scheduling converter rcp45 execution for domain: "${domain_name}" "${conv_time_start}" "${conv_time_end}" ..."
 		if [ $i == 1 ]; then
 			c1_job_id=$(sbatch --parsable --time=${s3m_max_time} converter-rcp45.slurm ${domain_name} ${conv_time_start} ${conv_time_end})
 		elif [ -v s3m1_job_id ]; then
