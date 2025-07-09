@@ -106,7 +106,7 @@
       "geo": {
         "terrain": {
           "path": "{path_geo}",
-          "file_name": "Mask_Italy_200m_WSG84geog.txt"
+          "file_name": "Mask_Italy_500m_WSG84geog.txt"
         }
       },
       "data_source": {
