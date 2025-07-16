@@ -55,3 +55,16 @@ if [ $LOOP_SUBFOLDERS -eq 1 ]; then
 else
   process_dir "$ROOT_DIR"
 fi
+
+
+# Given the root dir above find all sub directories (no subdirectories)
+find "$ROOT_DIR" -type d | while read -r dir; do
+# If that's a leaf directory,
+    if [ -z "$(find "$dir" -mindepth 1 -type d)" ]; then
+    #check the numeber to equals to 24
+        file_count=$(find "$dir" -maxdepth 1 -type f | wc -l)
+        if [ "$file_count" -ne 24 ]; then
+            echo "Directory '$dir' has $file_count files (expected 24)"
+        fi
+    fi
+done
