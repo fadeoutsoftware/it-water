@@ -88,11 +88,11 @@
       "geo": {
         "terrain": {
           "path": "{path_geo}",
-          "file_name": "grid_005_fpItalia.txt"
+          "file_name": "Mask_Italy_500m_WSG84geog.txt"
         }
       },
       "data_source": {
-        "dset": {
+        "dset_01": {
           "path": "{path_source}/%Y/%m/%d/",
           "file_name": "REff.%Y%m%d%H%M.tiff"
         },
