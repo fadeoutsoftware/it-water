@@ -169,7 +169,7 @@ def main(alg_collectors_settings: dict = None):
         end_data_time = select_time_format(end_data_time, time_format='%Y-%m-%d %H:%M')
 
         # get data source settings
-        data_src_settings = alg_variables_application['data_source']['dset']
+        data_src_settings = alg_variables_application['data_source']['dset_01']
         # organize data source obj
         data_src_obj = DataLocal(
             path=data_src_settings['path'],
@@ -185,7 +185,7 @@ def main(alg_collectors_settings: dict = None):
         )
 
         # get data destination settings
-        data_dst_settings = alg_variables_application['data_destination']['dset']
+        data_dst_settings = alg_variables_application['data_destination']['dset_01']
         # organize data destination obj
         data_dst_obj = DataLocal(
             path=data_dst_settings['path'],
