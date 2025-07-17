@@ -43,6 +43,7 @@ import time
 
 import numpy as np
 import pandas as pd
+
 from multiprocessing import Pool
 
 from shybox.generic_toolkit.lib_utils_args import get_args
@@ -95,9 +96,9 @@ def split_datetime_in_days(start_date: str, end_date: str):
         dstart = dt_start + timedelta(days=(i))
         dstart = dstart.replace(minute=0)
         dstart = dstart.replace(hour=0)
-        dend = dt_start + timedelta(days=(i)) 
+        dend = dstart + timedelta(days=(i)) 
         dend = dend.replace(minute=0)
-        dend = dend.replace(hour=23)
+        #dend = dend.replace(hour=23)
         array.append(dstart.strftime(fmt))
         array.append(dend.strftime(fmt))
         result.append(array)
@@ -116,7 +117,7 @@ def pool_handler():
     if TIME_END is None:
         raise EnvironmentError("TIME_END environment variable not set")
 
-    iCoreCount = os.cpu_count()
+    iCoreCount = 4
     print ("core count %s", iCoreCount)
     
     intervals = split_datetime_in_days(TIME_START,TIME_END)
@@ -138,17 +139,18 @@ alg_version = '1.0.0'
 alg_release = '2025-04-03'
 # ----------------------------------------------------------------------------------------------------------------------
 
+#global support variable to handle 
+
+orc_process_array = []
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # script main
-def main(work_data):
+def main():
 
 
     
-    if work_data[0] == "" or work_data[1] =="":
-        raise Exception("Parallel execution : Missing parameters for start/end date")
     
-    print("Work data "+ work_data[0] +" and "+work_data[1]  )
     # ------------------------------------------------------------------------------------------------------------------
     # get file settings
     alg_file_settings, alg_time_settings = get_args(settings_folder=os.path.dirname(os.path.realpath(__file__)))
@@ -174,7 +176,7 @@ def main(work_data):
     collector_data.view(table_print=False)
 
     # support variable used to compose log file with start time and end time (required for each process)
-    log_file_name = alg_variables_settings['file_log'] + "_" + work_data[0] + " " + work_data[1] + ".log"
+    log_file_name = alg_variables_settings['file_log'] + "_" + str(datetime.now().microsecond) + ".log"
 
     # set logging stream
     set_logging_stream(
@@ -210,15 +212,19 @@ def main(work_data):
         }
     }
     # ------------------------------------------------------------------------------------------------------------------
-    print(work_data[0])
-    print(work_data[1])
+    
+    
+    
+    
     # ------------------------------------------------------------------------------------------------------------------
     # method to organize time information
     alg_sim_time = select_time_range(
-        time_start=work_data[0],
-        time_end=work_data[1],
+        time_start=alg_variables_application['time']['start'],
+        time_end=alg_variables_application['time']['end'],
         time_frequency=alg_variables_application['time']['frequency'])
     alg_sim_time = select_time_format(alg_sim_time, time_format=alg_variables_application['time']['format'])
+    # ------------------------------------------------------------------------------------------------------------------
+
     # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # define geo obj
@@ -235,6 +241,8 @@ def main(work_data):
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
+    
+
     # time iteration(s)
     for sim_time in alg_sim_time:
 
@@ -246,6 +254,7 @@ def main(work_data):
             time_period=5,
             time_frequency='h')
         start_data_time, end_data_time = alg_data_time[0], alg_data_time[-1]
+
 
         start_data_time = select_time_format(start_data_time, time_format='%Y-%m-%d %H:%M')
         end_data_time = select_time_format(end_data_time, time_format='%Y-%m-%d %H:%M')
@@ -282,15 +291,38 @@ def main(work_data):
             time_period=5, time_format='%Y%m%d%H%M')
 
         # orchestrator multi time(s) settings
+        
         orc_process = Orchestrator.multi_time(
             data_package_in=[data_src_obj], data_package_out=[data_dst_obj],
             data_ref=geo_data,
             configuration=configuration['WORKFLOW']
         )
+        '''
+        cur_orc_process = {} #empty dictionary
+        cur_orc_process["start_data_time"] = start_data_time
+        cur_orc_process["end_data_time"] = end_data_time
+        cur_orc_process["orc_process"] = orc_process
+        '''
 
+        orc_process_array.append([pd.date_range(start_data_time, end_data_time, freq='h'),
+                                  [data_src_obj],
+                                  [data_dst_obj],
+                                  geo_data,
+                                  configuration['WORKFLOW']])
+        # accumulate in a dict time and orc_processes 
+        # exit from for and execute a pool with input time ref : d.date_range(start_data_time, end_data_time, freq='h')
+        # orc_process from above 
         # orchestrator multi time(s) execution
-        orc_process.run(time=pd.date_range(start_data_time, end_data_time, freq='h'),
-                        group='by_time')
+    
+    p = Pool(int(len(orc_process_array)/3))
+    print (f"Array of orc process lenght {len(orc_process_array)}" )
+    print(type(orc_process_array[0][0])) 
+    #print(type(orc_process_array[0][1]))
+    
+    print(type(orc_process_array[1][0]))
+    #print(type(orc_process_array[1][1]))
+
+    p.map(mapper, orc_process_array)
 
     # ------------------------------------------------------------------------------------------------------------------
 
@@ -310,11 +342,36 @@ def main(work_data):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
+def mapper(work_data):
+    print(f"wd0 {work_data[0]}")
+    #print(f"wd1 {work_data[1]}")
+
+    orc_process = Orchestrator.multi_time(
+            data_package_in=work_data[1],
+            data_package_out=work_data[2],
+            data_ref=work_data[3],
+            configuration=work_data[4]
+        )
+
+
+    orc_process.run(time=work_data[0],group='by_time')
+    '''
+    actual launch
+    orc_process.run(time=pd.date_range
+    (start_data_time, end_data_time, freq='h'),
+                        group='by_time')
+    
+    print(type(orc_process_array_in))
+    for orc in orc_process_array_in:
+        print("start Time:")
+        print(orc["start_data_time"])
+    '''
+    return
 # ----------------------------------------------------------------------------------------------------------------------
 # call script from external library
 if __name__ == "__main__":
     # run script
-    pool_handler()
+    main()
 # ----------------------------------------------------------------------------------------------------------------------
 
 
