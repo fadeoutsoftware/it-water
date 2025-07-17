@@ -203,14 +203,15 @@ def main(work_data):
                 "tmp_dir": "tmp"
             },
             "process_list": {
-                "age": [
+                "REff": [
                     {"function": "merge_data_by_time"}
                 ]
             }
         }
     }
     # ------------------------------------------------------------------------------------------------------------------
-
+    print(work_data[0])
+    print(work_data[1])
     # ------------------------------------------------------------------------------------------------------------------
     # method to organize time information
     alg_sim_time = select_time_range(
@@ -219,7 +220,6 @@ def main(work_data):
         time_frequency=alg_variables_application['time']['frequency'])
     alg_sim_time = select_time_format(alg_sim_time, time_format=alg_variables_application['time']['format'])
     # ------------------------------------------------------------------------------------------------------------------
-    print("alg_sim_time " + alg_sim_time)
     # ------------------------------------------------------------------------------------------------------------------
     # define geo obj
     geo_data = DataLocal(
@@ -237,9 +237,9 @@ def main(work_data):
     # ------------------------------------------------------------------------------------------------------------------
     # time iteration(s)
     for sim_time in alg_sim_time:
-        print ("sim time" + sim_time)
-        print (alg_data_time[0])
-        print(alg_data_time[-1])
+
+        print(sim_time)
+        
         # time source data
         alg_data_time = select_time_range(
             time_start=sim_time,
@@ -251,12 +251,12 @@ def main(work_data):
         end_data_time = select_time_format(end_data_time, time_format='%Y-%m-%d %H:%M')
 
         # get data source settings
-        data_src_settings = alg_variables_application['data_source']['dset']
+        data_src_settings = alg_variables_application['data_source']['dset_01']
         # organize data source obj
         data_src_obj = DataLocal(
             path=data_src_settings['path'],
             file_name=data_src_settings['file_name'],
-            file_format="geotiff", file_mode=None, file_variable=['age'],
+            file_format="geotiff", file_mode=None, file_variable=['REff'],
             file_template={
                 "dims_geo": {"X": "longitude", "Y": "latitude", "time": "time"},
                 'coords_geo': {'Longitude': 'longitude', 'Latitude': 'latitude'},
@@ -267,7 +267,7 @@ def main(work_data):
         )
 
         # get data destination settings
-        data_dst_settings = alg_variables_application['data_destination']['dset']
+        data_dst_settings = alg_variables_application['data_destination']['dset_01']
         # organize data destination obj
         data_dst_obj = DataLocal(
             path=data_dst_settings['path'],
