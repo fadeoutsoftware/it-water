@@ -70,60 +70,6 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
 
-def split_datetime_in_days(start_date: str, end_date: str):
-    """
-    Split the interval between start_date and end_date in daily intervals, forcing the beginning to 00:00
-    and the end to 23:00
-    Args:
-        start_date (str): Start date in "%Y-%m-%d %H:%M" format.
-        end_date (str): End date in "%Y-%m-%d %H:%M" format.
-    Returns:
-        List[str]: List of datetime strings in "%Y-%m-%d %H:%M" format.
-    """
-
-    fmt = "%Y-%m-%d %H:%M"
-    # strip single quotes? 
-    start_date = start_date.strip("'")
-    end_date = end_date.strip("'")
-    dt_start = datetime.strptime(start_date, fmt)
-    dt_end = datetime.strptime(end_date, fmt)
-    num_intervals = (dt_end - dt_start).days
-    if num_intervals < 1:
-        raise ValueError("num_intervals must be >= 1")
-    result = []
-    for i in range(num_intervals):
-        array = [] 
-        dstart = dt_start + timedelta(days=(i))
-        dstart = dstart.replace(minute=0)
-        dstart = dstart.replace(hour=0)
-        dend = dstart + timedelta(days=(i)) 
-        dend = dend.replace(minute=0)
-        #dend = dend.replace(hour=23)
-        array.append(dstart.strftime(fmt))
-        array.append(dend.strftime(fmt))
-        result.append(array)
-    return result
-
-def pool_handler():
-###TIME_START='2003-10-01 00:00'
-###TIME_END='2003-10-15 23:00'
-#above from ENV
-    TIME_START = os.environ.get('TIME_START')
-    print("time start %s",TIME_START)
-    if TIME_START is None:
-        raise EnvironmentError("TIME_START environment variable not set")
-    TIME_END = os.environ.get('TIME_END')
-    print("time end %s",TIME_END)
-    if TIME_END is None:
-        raise EnvironmentError("TIME_END environment variable not set")
-
-    iCoreCount = 4
-    print ("core count %s", iCoreCount)
-    
-    intervals = split_datetime_in_days(TIME_START,TIME_END)
-    print("intervals %s", intervals)
-    p = Pool(len(intervals))
-    p.map(main, intervals) 
 
 # set logger
 logger_stream = logging.getLogger(logger_name)
@@ -147,9 +93,6 @@ orc_process_array = []
 # ----------------------------------------------------------------------------------------------------------------------
 # script main
 def main():
-
-
-    
     
     # ------------------------------------------------------------------------------------------------------------------
     # get file settings
@@ -291,13 +234,13 @@ def main():
             time_period=5, time_format='%Y%m%d%H%M')
 
         # orchestrator multi time(s) settings
-        
+        '''
         orc_process = Orchestrator.multi_time(
             data_package_in=[data_src_obj], data_package_out=[data_dst_obj],
             data_ref=geo_data,
             configuration=configuration['WORKFLOW']
         )
-        '''
+        
         cur_orc_process = {} #empty dictionary
         cur_orc_process["start_data_time"] = start_data_time
         cur_orc_process["end_data_time"] = end_data_time
@@ -314,16 +257,21 @@ def main():
         # orc_process from above 
         # orchestrator multi time(s) execution
     
-    p = Pool(int(len(orc_process_array)/3))
-    print (f"Array of orc process lenght {len(orc_process_array)}" )
-    print(type(orc_process_array[0][0])) 
+
+    iTasks = os.getenv('SLURM_CPUS_PER_TASK')
+    if iTasks is None:
+        iTasks = os.cpu_count()
+    else:
+        iTasks = int(iTasks)
+    p = Pool(iTasks)
+    #print (f"Array of orc process lenght {len(orc_process_array)}" )
+    #print(type(orc_process_array[0][0])) 
     #print(type(orc_process_array[0][1]))
     
-    print(type(orc_process_array[1][0]))
+    #print(type(orc_process_array[1][0]))
     #print(type(orc_process_array[1][1]))
 
     p.map(mapper, orc_process_array)
-
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -343,7 +291,7 @@ def main():
 # ----------------------------------------------------------------------------------------------------------------------
 
 def mapper(work_data):
-    print(f"wd0 {work_data[0]}")
+    #print(f"wd0 {work_data[0]}")
     #print(f"wd1 {work_data[1]}")
 
     orc_process = Orchestrator.multi_time(

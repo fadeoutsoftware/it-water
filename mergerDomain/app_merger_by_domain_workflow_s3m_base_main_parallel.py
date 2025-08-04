@@ -127,10 +127,14 @@ def pool_handler():
     if TIME_END is None:
         raise EnvironmentError("TIME_END environment variable not set")
 
-    iCoreCount = os.cpu_count()
-    print ("core count %s", iCoreCount)
-    p = Pool(iCoreCount)
-    intervals = split_datetime_intervals(TIME_START,TIME_END,iCoreCount)
+
+    iTasks = os.getenv('SLURM_CPUS_PER_TASK')
+    if iTasks is None:
+        iTasks = os.cpu_count()
+    else:
+        iTasks = int(iTasks)
+    p = Pool(iTasks)
+    intervals = split_datetime_intervals(TIME_START,TIME_END,iTasks)
     print("intervals %s", intervals)
     p.map(main, intervals) 
 
