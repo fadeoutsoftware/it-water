@@ -1,0 +1,6 @@
+certifi
+netCDF4
+numpy
+packaging
+pluggy
+python-dateutil
