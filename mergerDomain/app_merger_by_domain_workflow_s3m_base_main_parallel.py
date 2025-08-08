@@ -100,9 +100,15 @@ def split_datetime_intervals(start_date: str, end_date: str, num_intervals: int)
     if num_intervals < 1:
         raise ValueError("num_intervals must be >= 1")
     total_seconds = (dt_end - dt_start).total_seconds()
-    step = total_seconds / num_intervals
+    total_days = (dt_end - dt_start).total_days()
+    actual_intervals = num_intervals
+    ## In case we have more interval count than days, we adjust the intervals to be half the number of days, 
+    ## for an elaboration to be done over 12 hours for each thread
+    if total_days < actual_intervals:
+        actual_intervals = int(total_days / 2)
+    step = total_seconds / actual_intervals 
     result = []
-    for i in range(num_intervals):
+    for i in range(actual_intervals):
         array = [] 
         dstart = dt_start + timedelta(seconds=(i) * step)
         dstart = dstart.replace(minute=0)
