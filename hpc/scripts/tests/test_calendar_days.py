@@ -49,8 +49,8 @@ def test_create_monthly_files_days(mock_join, mock_open, year, month, expected_d
     handle = mock_open()
     handle.write.assert_any_call("TimeStart\tTimeEnd\n")
     # Check first and last day
-    handle.write.assert_any_call(f"{year}-{month:02d}-01 00:00\t{year}-{month:02d}-01 23:00\n")
-    handle.write.assert_any_call(f"{year}-{month:02d}-{expected_days:02d} 00:00\t{year}-{month:02d}-{expected_days:02d} 23:00\n")
+    handle.write.assert_any_call(f"{year}-{month:02d}-01T00:00\t{year}-{month:02d}-01T23:00\n")
+    handle.write.assert_any_call(f"{year}-{month:02d}-{expected_days:02d}T00:00\t{year}-{month:02d}-{expected_days:02d}T23:00\n")
 
 
 
@@ -79,5 +79,5 @@ def test_create_monthly_files_leap_year(mock_join, mock_open):
     for fname, (year, month, days) in expected.items():
         # Check header and first/last day for each file
         handle.write.assert_any_call("TimeStart\tTimeEnd\n")
-        handle.write.assert_any_call(f"{year}-{month:02d}-01 00:00\t{year}-{month:02d}-01 23:00\n")
-        handle.write.assert_any_call(f"{year}-{month:02d}-{days:02d} 00:00\t{year}-{month:02d}-{days:02d} 23:00\n")
+        handle.write.assert_any_call(f"{year}-{month:02d}-01T00:00\t{year}-{month:02d}-01T23:00\n")
+        handle.write.assert_any_call(f"{year}-{month:02d}-{days:02d}T00:00\t{year}-{month:02d}-{days:02d}T23:00\n")

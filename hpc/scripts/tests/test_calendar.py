@@ -41,5 +41,5 @@ class TestCalendar:
     assert expected_file in actual_files, f"Missing file: {expected_file}"
     # Check header and a few lines
     mock_open().write.assert_any_call("TimeStart\tTimeEnd\n")
-    mock_open().write.assert_any_call("2022-01-01 00:00\t2022-01-01 23:00\n")
-    mock_open().write.assert_any_call("2022-01-31 00:00\t2022-01-31 23:00\n")
+    mock_open().write.assert_any_call("2022-01-01T00:00\t2022-01-01T23:00\n")
+    mock_open().write.assert_any_call("2022-01-31T00:00\t2022-01-31T23:00\n")

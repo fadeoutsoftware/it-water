@@ -33,8 +33,8 @@ def createMonthlyFiles(startYear: int,
             f.write("TimeStart\tTimeEnd\n")
             for day in range(numDays):
                 dayDate = current.replace(day=1) + timedelta(days=day)
-                startStr = dayDate.strftime("%Y-%m-%d 00:00")
-                endStr = dayDate.strftime("%Y-%m-%d 23:00")
+                startStr = dayDate.strftime("%Y-%m-%dT00:00")
+                endStr = dayDate.strftime("%Y-%m-%dT23:00")
                 f.write(f"{startStr}\t{endStr}\n")
         current = nextMonth
 
