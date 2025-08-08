@@ -4,7 +4,7 @@
 # SLURM directives
 #SBATCH --ntasks=1
 #SBATCH --mem=8G
-#SBATCH --output=/g100_scratch/userexternal/mmenapac/shared/S3M_logs/reanalysis/out/S3M_%A.out
+#SBATCH --output=/g100_scratch/userexternal/mmenapac/shared/S3M_logs/reanalysis/jobs/S3M_%A.out
 #SBATCH --partition=g100_usr_prod
 #SBATCH --time=0-12:00:00			 	 # Time limit days-hrs:min:sec
 # ----------------------------------------------------------------------------------------
@@ -24,8 +24,8 @@ time_period=$7
 # folders
 path_data="/g100_work/IscrC_IT-WATER/s3m/reanalysis"
 path_app="/g100_work/IscrC_IT-WATER/s3m/reanalysis"
-path_input="/g100_scratch/userexternal/mmenapac/shared/S3M_input/reanalysis/"
-path_destination="/g100_scratch/userexternal/mmenapac/shared/S3M_output/reanalysis/"
+path_input="/g100_work/smr_prod/a07smr01/IT-WATER/S3M_input/reanalysis/"
+path_destination="/g100_work/smr_prod/a07smr01/IT-WATER/S3M_output/reanalysis/"
 path_log="/g100_scratch/userexternal/mmenapac/shared/S3M_logs/reanalysis/"
 path_static="/g100_work/IscrC_IT-WATER/S3M_static/history/"
 path_config="/g100_work/IscrC_IT-WATER/S3M_config/history"
@@ -69,10 +69,10 @@ if [ $dest_owner != "IscrC_IT-WATER" ]; then
 	chown -R :IscrC_IT-WATER ${path_log}${domain_name}
 fi
 
-echo " ==> Uptading permissions on "${path_destination}${domain_name}
-chmod -R 774 ${path_destination}${domain_name}
-echo " ==> Uptading permissions on "${path_log}${domain_name}
-chmod -R 774 ${path_log}${domain_name}
+# echo " ==> Uptading permissions on "${path_destination}${domain_name}
+# chmod -R 774 ${path_destination}${domain_name}
+# echo " ==> Uptading permissions on "${path_log}${domain_name}
+# chmod -R 774 ${path_log}${domain_name}
 
 
 echo " ==> Completed S3M for "${domain_name}" [JOB ID "${SLURM_JOBID}"]"

@@ -11,7 +11,7 @@
 
 # ----------------------------------------------------------------------------------------
 # user arguments
-# Launch Generator with the step required
+# Launch Generator with the step required 
 
 # Check directories !
 echo " ==================================================================================="
@@ -24,16 +24,16 @@ source .venv/bin/activate
 
 
 # Generate periods (start stop managed internally by the script, relying on control.json file)
-### NOTE Form this
+### NOTE Form this 
 echo " ==> Generating new periods"
 python3 ./scripts/generator.py --controlFile=control-rcp85.json
 
 
-# Schedule new simulation
+# Schedule new simulation 
 echo " ==> Scheduling new run..."
 ./orchestrator-rcp85-auto.sh domains periods_rcp85
-### To this, for the highest level of safety SHOULD be an atomic operation
+### To this, for the highest level of safety SHOULD be an atomic operation 
 
 # TODO add some details to the output
-echo " ==> Scheduler completed, bye bye!"
+echo " ==> Scheduler complted, bye bye!"
 echo " ==================================================================================="
