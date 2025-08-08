@@ -37,7 +37,7 @@ do
 	if [ $i == 1 ]; then
 		m2_job_id=$(sbatch --parsable --time=${max_time} --ntasks=31 --dependency=afterok:$m1_job_id merger-time-rcp45.slurm  ${calendar})
 	elif [ -v m2_job_id ]; then
-		m2_job_id=$(sbatch --parsable --time=${max_time} --dependency=afterok:$m1_job_id,$m2_job_id merger-time-rcp45.slurm ${calendar})
+		m2_job_id=$(sbatch --parsable --time=${max_time} --ntasks=31 --dependency=afterok:$m1_job_id,$m2_job_id merger-time-rcp45.slurm ${calendar})
 	fi
 	echo " ==> Merger by time scheduled with job id "${m2_job_id}"."
 done
