@@ -9,3 +9,4 @@ docker run -it \
 docker.io/it-water/mergerdomain_hours:dev
 
 docker rm merger
+ 
