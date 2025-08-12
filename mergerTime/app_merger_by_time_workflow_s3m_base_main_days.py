@@ -23,16 +23,6 @@ PATH_TMP=$HOME/dataset_base/tmp/
 
 Version(s):
 20250403 (1.0.0) --> Beta release for shybox package
-
-
-Enhancements by Fadeout for HPC :
-- At startup check the number of cores available 
-- Creates a pool of workers, leveraging multiprocessing library. 
-- Splits the intervals, considering the available cores.
-- Launch parallel processes accordingly to the splitted intervals defined above
-Notes : 
-V1 replicates the access to file setting
-V2 (potential enanchement) optimize this by accessing ONCE the files and prepare parameters for the Pool 
 """
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -43,8 +33,6 @@ import time
 
 import numpy as np
 import pandas as pd
-
-from multiprocessing import Pool
 
 from shybox.generic_toolkit.lib_utils_args import get_args
 from shybox.generic_toolkit.lib_utils_logging import set_logging_stream
@@ -61,15 +49,7 @@ from shybox.orchestrator_toolkit.orchestrator_handler_base import OrchestratorHa
 from shybox.dataset_toolkit.dataset_handler_local import DataLocal
 
 # fx imported in the PROCESSES (will be used in the global variables PROCESSES) --> DO NOT REMOVE
-from shybox.processing_toolkit.lib_proc_mask import mask_data_by_ref, mask_data_by_limits
-from shybox.processing_toolkit.lib_proc_interp import interpolate_data
-from shybox.processing_toolkit.lib_proc_merge import merge_data_by_ref
-
-# Util library to manage intervals
-from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
-
-
+from shybox.processing_toolkit.lib_proc_merge import merge_data_by_time
 
 # set logger
 logger_stream = logging.getLogger(logger_name)
@@ -85,22 +65,18 @@ alg_version = '1.0.0'
 alg_release = '2025-04-03'
 # ----------------------------------------------------------------------------------------------------------------------
 
-#global support variable to handle 
-
-orc_process_array = []
-
 
 # ----------------------------------------------------------------------------------------------------------------------
 # script main
-def main():
-    
+def main(alg_collectors_settings: dict = None):
+
     # ------------------------------------------------------------------------------------------------------------------
     # get file settings
     alg_file_settings, alg_time_settings = get_args(settings_folder=os.path.dirname(os.path.realpath(__file__)))
 
     # method to initialize settings class
     driver_settings = DrvSettings(file_name=alg_file_settings, file_time=alg_time_settings,
-                                  file_key='settings', settings_collectors=None)
+                                  file_key='settings', settings_collectors=alg_collectors_settings)
 
     # method to configure variable settings
     (alg_variables_settings,
@@ -118,13 +94,10 @@ def main():
     # collector data
     collector_data.view(table_print=False)
 
-    # support variable used to compose log file with start time and end time (required for each process)
-    log_file_name = alg_variables_settings['file_log'] + "_" + str(datetime.now().microsecond) + ".log"
-
     # set logging stream
     set_logging_stream(
         logger_name=logger_name, logger_format=logger_format,
-        logger_folder=alg_variables_settings['path_log'], logger_file=log_file_name)
+        logger_folder=alg_variables_settings['path_log'], logger_file=alg_variables_settings['file_log'])
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -167,20 +140,24 @@ def main():
 
     }
     # ------------------------------------------------------------------------------------------------------------------
-    
-    
-    
-    
+
     # ------------------------------------------------------------------------------------------------------------------
     # method to organize time information
     alg_sim_time = select_time_range(
         time_start=alg_variables_application['time']['start'],
         time_end=alg_variables_application['time']['end'],
         time_frequency=alg_variables_application['time']['frequency'])
+    print( "----------------------------------------")
+    print(alg_sim_time)
+    print( "----------------------------------------")
     alg_sim_time = select_time_format(alg_sim_time, time_format=alg_variables_application['time']['format'])
+    print( alg_variables_application['time']['start'] )
+    print( alg_variables_application['time']['end'] )
+    print( alg_variables_application['time']['frequency'])
+    print( "----------------------------------------")
+    print(alg_sim_time)
     # ------------------------------------------------------------------------------------------------------------------
 
-    # ------------------------------------------------------------------------------------------------------------------
     # ------------------------------------------------------------------------------------------------------------------
     # define geo obj
     geo_data = DataLocal(
@@ -196,94 +173,104 @@ def main():
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
-    
-
     # time iteration(s)
-    for sim_time in alg_sim_time:
-
-        print(sim_time)
-        
+    # TO BE FIXED: Iterates trough single values of the datetime string ! ARGH ! 
+    for sim_time in alg_sim_time: 
+        print("SIM TIME " + sim_time)
         # time source data
         alg_data_time = select_time_range(
             time_start=sim_time,
-            time_period=5,
+            time_period=24,
             time_frequency='h')
         start_data_time, end_data_time = alg_data_time[0], alg_data_time[-1]
-
 
         start_data_time = select_time_format(start_data_time, time_format='%Y-%m-%d %H:%M')
         end_data_time = select_time_format(end_data_time, time_format='%Y-%m-%d %H:%M')
 
         # get data source settings
-        data_src_settings = alg_variables_application['data_source']['dset_01']
+        data_src_settings_01 = alg_variables_application['data_source']['dset_01']
         # organize data source obj
-        data_src_obj = DataLocal(
-            path=data_src_settings['path'],
-            file_name=data_src_settings['file_name'],
-            file_format="geotiff", file_mode=None, file_variable=['REff'],
+        data_src_obj_01 = DataLocal(
+            path=data_src_settings_01['path'],
+            file_name=data_src_settings_01['file_name'],
+            file_format="geotiff", file_mode=None, file_variable=['rain_eff'],
             file_template={
                 "dims_geo": {"X": "longitude", "Y": "latitude", "time": "time"},
                 'coords_geo': {'Longitude': 'longitude', 'Latitude': 'latitude'},
-                "vars_data": {"REff": "effective_rainfall", "SnowMask": "snow_mask"}
+                "vars_data": {"rain_eff": "rain_eff"}
             },
             time_signature='current',
             time_reference=start_data_time, time_period=1, time_freq='h', time_direction='forward',
         )
 
         # get data destination settings
-        data_dst_settings = alg_variables_application['data_destination']['dset_01']
+        data_dst_settings_01 = alg_variables_application['data_destination']['dset_01']
         # organize data destination obj
-        data_dst_obj = DataLocal(
-            path=data_dst_settings['path'],
-            file_name=data_dst_settings['file_name'], time_signature='start',
+        data_dst_obj_01 = DataLocal(
+            path=data_dst_settings_01['path'],
+            file_name=data_dst_settings_01['file_name'], time_signature='start',
             file_format='netcdf', file_type='itwater', file_mode='grid',
-            file_variable=data_dst_settings['variable'],
+            file_variable=data_dst_settings_01['variable'],
             file_template={
                 "dims_geo": {"longitude": "longitude", "latitude": "latitude"},
                 "vars_geo": {"longitude": "longitude", "latitude": "longitude"},
-                "vars_data": data_dst_settings['vars_data']
+                "vars_data": data_dst_settings_01['vars_data']
             },
-            time_period=5, time_format='%Y%m%d%H%M')
+            time_period=24, time_format='%Y%m%d%H%M')
+
+        # get data source settings
+        data_src_settings_02 = alg_variables_application['data_source']['dset_02']
+        # organize data source obj
+        data_src_obj_02 = DataLocal(
+            path=data_src_settings_02['path'],
+            file_name=data_src_settings_02['file_name'],
+            file_format="geotiff", file_mode=None, file_variable=['snow_mask'],
+            file_template={
+                "dims_geo": {"X": "longitude", "Y": "latitude", "time": "time"},
+                'coords_geo': {'Longitude': 'longitude', 'Latitude': 'latitude'},
+                "vars_data": {"snow_mask": "snow_mask"}
+            },
+            time_signature='current',
+            time_reference=start_data_time, time_period=1, time_freq='h', time_direction='forward',
+        )
+
+        # get data destination settings
+        data_dst_settings_02 = alg_variables_application['data_destination']['dset_02']
+        # organize data destination obj
+        data_dst_obj_02 = DataLocal(
+            path=data_dst_settings_02['path'],
+            file_name=data_dst_settings_02['file_name'], time_signature='start',
+            file_format='netcdf', file_type='itwater', file_mode='grid',
+            file_variable=data_dst_settings_02['variable'],
+            file_template={
+                "dims_geo": {"longitude": "longitude", "latitude": "latitude"},
+                "vars_geo": {"longitude": "longitude", "latitude": "longitude"},
+                "vars_data": data_dst_settings_02['vars_data']
+            },
+            time_period=24, time_format='%Y%m%d%H%M')
 
         # orchestrator multi time(s) settings
-        '''
-        orc_process = Orchestrator.multi_time(
-            data_package_in=[data_src_obj], data_package_out=[data_dst_obj],
+        orc_process_01 = Orchestrator.multi_time(
+            data_package_in=[data_src_obj_01], data_package_out=[data_dst_obj_01],
             data_ref=geo_data,
-            configuration=configuration['WORKFLOW']
+            configuration=configuration['WORKFLOW_DSET_01']
         )
-        
-        cur_orc_process = {} #empty dictionary
-        cur_orc_process["start_data_time"] = start_data_time
-        cur_orc_process["end_data_time"] = end_data_time
-        cur_orc_process["orc_process"] = orc_process
-        '''
 
-        orc_process_array.append([pd.date_range(start_data_time, end_data_time, freq='h'),
-                                  [data_src_obj],
-                                  [data_dst_obj],
-                                  geo_data,
-                                  configuration['WORKFLOW']])
-        # accumulate in a dict time and orc_processes 
-        # exit from for and execute a pool with input time ref : d.date_range(start_data_time, end_data_time, freq='h')
-        # orc_process from above 
         # orchestrator multi time(s) execution
-    
+        orc_process_01.run(time=pd.date_range(start_data_time, end_data_time, freq='h'),
+                        group='by_time')
 
-    iTasks = os.getenv('SLURM_CPUS_PER_TASK')
-    if iTasks is None:
-        iTasks = os.cpu_count()
-    else:
-        iTasks = int(iTasks)
-    p = Pool(iTasks)
-    #print (f"Array of orc process lenght {len(orc_process_array)}" )
-    #print(type(orc_process_array[0][0])) 
-    #print(type(orc_process_array[0][1]))
-    
-    #print(type(orc_process_array[1][0]))
-    #print(type(orc_process_array[1][1]))
+        # orchestrator multi time(s) settings
+        orc_process_02 = Orchestrator.multi_time(
+            data_package_in=[data_src_obj_02], data_package_out=[data_dst_obj_02],
+            data_ref=geo_data,
+            configuration=configuration['WORKFLOW_DSET_02']
+        )
 
-    p.map(mapper, orc_process_array)
+        # orchestrator multi time(s) execution
+        orc_process_02.run(time=pd.date_range(start_data_time, end_data_time, freq='h'),
+                        group='by_time')
+
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -302,31 +289,6 @@ def main():
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def mapper(work_data):
-    #print(f"wd0 {work_data[0]}")
-    #print(f"wd1 {work_data[1]}")
-
-    orc_process = Orchestrator.multi_time(
-            data_package_in=work_data[1],
-            data_package_out=work_data[2],
-            data_ref=work_data[3],
-            configuration=work_data[4]
-        )
-
-
-    orc_process.run(time=work_data[0],group='by_time')
-    '''
-    actual launch
-    orc_process.run(time=pd.date_range
-    (start_data_time, end_data_time, freq='h'),
-                        group='by_time')
-    
-    print(type(orc_process_array_in))
-    for orc in orc_process_array_in:
-        print("start Time:")
-        print(orc["start_data_time"])
-    '''
-    return
 # ----------------------------------------------------------------------------------------------------------------------
 # call script from external library
 if __name__ == "__main__":

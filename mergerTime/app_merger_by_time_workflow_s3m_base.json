@@ -108,7 +108,7 @@
           "format": "netcdf",
           "type": "itwater",
           "mode": "grid",
-          "variable": "REff",
+          "variable": "rain_eff",
           "dims_geo": {
             "longitude": "longitude",
             "latitude": "latitude"
@@ -118,7 +118,7 @@
             "latitude": "longitude"
           },
           "vars_data": {
-            "effective_rainfall": "EFFECTIVE_RAINFALL"
+            "rain_eff": "RAIN_EFF"
           }
         },
         "dset_02": {
@@ -127,7 +127,7 @@
           "format": "netcdf",
           "type": "itwater",
           "mode": "grid",
-          "variable": "SnowMask",
+          "variable": "snow_mask",
           "dims_geo": {
             "longitude": "longitude",
             "latitude": "latitude"
