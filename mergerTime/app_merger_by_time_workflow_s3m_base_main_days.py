@@ -34,6 +34,8 @@ import time
 import numpy as np
 import pandas as pd
 
+from multiprocessing import Pool
+
 from shybox.generic_toolkit.lib_utils_args import get_args
 from shybox.generic_toolkit.lib_utils_logging import set_logging_stream
 from shybox.generic_toolkit.lib_utils_time import select_time_range, select_time_format
@@ -65,6 +67,9 @@ alg_version = '1.0.0'
 alg_release = '2025-04-03'
 # ----------------------------------------------------------------------------------------------------------------------
 
+# Global support variable to handle multithreading approach 
+
+orc_process_array = []
 
 # ----------------------------------------------------------------------------------------------------------------------
 # script main
@@ -174,7 +179,6 @@ def main(alg_collectors_settings: dict = None):
 
     # ------------------------------------------------------------------------------------------------------------------
     # time iteration(s)
-    # TO BE FIXED: Iterates trough single values of the datetime string ! ARGH ! 
     for sim_time in alg_sim_time: 
         print("SIM TIME " + sim_time)
         # time source data
@@ -249,7 +253,7 @@ def main(alg_collectors_settings: dict = None):
             },
             time_period=24, time_format='%Y%m%d%H%M')
 
-        # orchestrator multi time(s) settings
+        '''# orchestrator multi time(s) settings
         orc_process_01 = Orchestrator.multi_time(
             data_package_in=[data_src_obj_01], data_package_out=[data_dst_obj_01],
             data_ref=geo_data,
@@ -270,9 +274,29 @@ def main(alg_collectors_settings: dict = None):
         # orchestrator multi time(s) execution
         orc_process_02.run(time=pd.date_range(start_data_time, end_data_time, freq='h'),
                         group='by_time')
+        '''
 
+        orc_process_array.append([pd.date_range(start_data_time, end_data_time, freq='h'),
+                                  [data_src_obj_01],
+                                  [data_dst_obj_01],
+                                  geo_data,
+                                  configuration['WORKFLOW_DSET_01']])
+        
+        orc_process_array.append([pd.date_range(start_data_time, end_data_time, freq='h'),
+                                  [data_src_obj_02],
+                                  [data_dst_obj_02],
+                                  geo_data,
+                                  configuration['WORKFLOW_DSET_02']])
+        
+    iTasks = os.getenv('SLURM_CPUS_PER_TASK')
+    if iTasks is None:
+        iTasks = os.cpu_count()
+    else:
+        iTasks = int(iTasks)
+    p = Pool(iTasks)
+
+    p.map(mapper, orc_process_array)
     # ------------------------------------------------------------------------------------------------------------------
-
     # ------------------------------------------------------------------------------------------------------------------
     # info algorithm (end)
     alg_time_elapsed = round(time.time() - start_time, 1)
@@ -286,6 +310,21 @@ def main(alg_collectors_settings: dict = None):
     logger_stream.info(logger_arrow.arrow_main_break)
     # ------------------------------------------------------------------------------------------------------------------
 
+def mapper(work_data):
+    #print(f"wd0 {work_data[0]}")
+    #print(f"wd1 {work_data[1]}")
+
+    orc_process = Orchestrator.multi_time(
+            data_package_in=work_data[1],
+            data_package_out=work_data[2],
+            data_ref=work_data[3],
+            configuration=work_data[4]
+        )
+
+
+    orc_process.run(time=work_data[0],group='by_time')
+    
+    return
 
 # ----------------------------------------------------------------------------------------------------------------------
 
