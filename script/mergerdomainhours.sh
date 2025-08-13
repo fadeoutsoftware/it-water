@@ -1,4 +1,4 @@
-dos2unix .env-mergerdomain
+dos2unix .env-mergerdomain_hours
 
 docker run -it \
 -u root \
