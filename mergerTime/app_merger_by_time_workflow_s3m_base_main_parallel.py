@@ -85,7 +85,7 @@ alg_version = '1.0.0'
 alg_release = '2025-04-03'
 # ----------------------------------------------------------------------------------------------------------------------
 
-#global support variable to handle 
+# Global support variable to handle multithreading approach 
 
 orc_process_array = []
 
