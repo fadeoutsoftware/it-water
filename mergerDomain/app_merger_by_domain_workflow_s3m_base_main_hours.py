@@ -247,7 +247,7 @@ def run():
     orc_processes = []
     intervals = split_datetime_24h(TIME_START,TIME_END)
     for start,end in intervals:
-        item = build_orc_processes([start,end,alg_variables_application,configuration,geo_data])
+        item = build_orc_process([start,end,alg_variables_application,configuration,geo_data])
         orc_processes.append(item)
     
 
@@ -275,7 +275,7 @@ def run():
     # ------------------------------------------------------------------------------------------------------------------
 
 
-def build_orc_processes(run_params):
+def build_orc_process(run_params):
     if run_params[0] == "" or run_params[1] =="":
         raise Exception("Parallel execution : Missing parameters for start/end date")
     
