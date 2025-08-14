@@ -244,24 +244,17 @@ def run():
     # ------------------------------------------------------------------------------------------------------------------
 
     
-    run_parametes = []
+    run_parameters = []
     intervals = split_datetime_24h(TIME_START,TIME_END)
-    # start period
-    run_parametes.append(intervals[0])
-    # end period
-    run_parametes.append(intervals[1])
-    # variables
-    run_parametes.append(alg_variables_application)
-    # configuration
-    run_parametes.append(configuration)
-    # geodata
-    run_parametes.append(geo_data)
+    for start,end in intervals:
+        # all parameters in one array
+        run_parameters.append([start,end,alg_variables_application,configuration,geo_data])
+        
     
-    orc_processes = list(map(build_orc_process, intervals))
-    
+    orc_processes = list(map(build_orc_process, run_parameters))
 
     processes = []
-
+    print("Processes count : " + str(len(orc_processes)))
     for idx, (orc_process, sim_time) in enumerate(orc_processes):
         p = Process(target=run_orc_process, args=(orc_process, sim_time))
         processes.append(p)
@@ -285,7 +278,6 @@ def run():
 
 
 def build_orc_process(run_params):
-
     if run_params[0] == "" or run_params[1] =="":
         raise Exception("Parallel execution : Missing parameters for start/end date")
     
@@ -339,6 +331,7 @@ def build_orc_process(run_params):
         processes.append([orc_process, sim_time])
         # orchestrator multi variable execution
         #orc_process.run(time=sim_time)
+        
     
     return processes
     # ------------------------------------------------------------------------------------------------------------------
