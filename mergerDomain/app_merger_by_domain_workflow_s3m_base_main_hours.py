@@ -247,9 +247,8 @@ def run():
     orc_processes = []
     intervals = split_datetime_24h(TIME_START,TIME_END)
     for start,end in intervals:
-        items = build_orc_processes([start,end,alg_variables_application,configuration,geo_data])
-        for item in items:  
-            orc_processes.append(item)
+        item = build_orc_processes([start,end,alg_variables_application,configuration,geo_data])
+        orc_processes.append(item)
     
 
     sys_processes = []
@@ -280,59 +279,40 @@ def build_orc_processes(run_params):
     if run_params[0] == "" or run_params[1] =="":
         raise Exception("Parallel execution : Missing parameters for start/end date")
     
+    sim_time = pd.Timestamp(run_params[0].strip("\'"))
     alg_variables_application = run_params[2]
     configuration = run_params[3]
     geo_data = run_params[4]
 
-    # array of the processes to run
-    processes = []
+ 
+    # iterate over src datasets
+    data_src_list = []
+    for data_src_key, data_src_settings in alg_variables_application['data_source'].items():
+        data_src_obj = create_src_dataset(
+            file_name=data_src_settings['file_name'], file_path=data_src_settings['path'],
+            file_time=sim_time)
+        data_src_list.append(data_src_obj)
+
+    # iterate over dst datasets
+    data_dst_list = []
+    for data_dst_key, data_dst_settings in alg_variables_application['data_destination'].items():
+        data_dst_obj = create_dst_dataset(
+            file_name=data_dst_settings['file_name'], file_path=data_dst_settings['path'],
+            file_time=sim_time, file_variable=data_dst_settings['variable'],
+            vars_data=data_dst_settings['vars_data'],
+            vars_geo=data_dst_settings['vars_geo'], dims_geo=data_dst_settings['dims_geo'])
+        data_dst_list.append(data_dst_obj)
+
+    # orchestrator multi variable settings
+    orc_process = Orchestrator.multi_tile(
+        data_package_in=data_src_list, data_package_out=data_dst_list,
+        data_ref=geo_data,
+        configuration=configuration['WORKFLOW']
+    )
+
+
+    return [orc_process, sim_time]
     
-    # ------------------------------------------------------------------------------------------------------------------
-    # method to organize time information
-    alg_sim_time = select_time_range(
-        time_start=run_params[0],
-        time_end=run_params[1],
-        time_frequency=alg_variables_application['time']['frequency'])
-    alg_sim_time = select_time_format(alg_sim_time, time_format=alg_variables_application['time']['format'])
-    # ------------------------------------------------------------------------------------------------------------------
-
-    
-    # ------------------------------------------------------------------------------------------------------------------
-    # time iteration(s)
-    for sim_time in alg_sim_time:
-
-        # iterate over src datasets
-        data_src_list = []
-        for data_src_key, data_src_settings in alg_variables_application['data_source'].items():
-            data_src_obj = create_src_dataset(
-                file_name=data_src_settings['file_name'], file_path=data_src_settings['path'],
-                file_time=sim_time)
-            data_src_list.append(data_src_obj)
-
-        # iterate over dst datasets
-        data_dst_list = []
-        for data_dst_key, data_dst_settings in alg_variables_application['data_destination'].items():
-            data_dst_obj = create_dst_dataset(
-                file_name=data_dst_settings['file_name'], file_path=data_dst_settings['path'],
-                file_time=sim_time, file_variable=data_dst_settings['variable'],
-                vars_data=data_dst_settings['vars_data'],
-                vars_geo=data_dst_settings['vars_geo'], dims_geo=data_dst_settings['dims_geo'])
-            data_dst_list.append(data_dst_obj)
-
-        # orchestrator multi variable settings
-        orc_process = Orchestrator.multi_tile(
-            data_package_in=data_src_list, data_package_out=data_dst_list,
-            data_ref=geo_data,
-            configuration=configuration['WORKFLOW']
-        )
-
-
-        processes.append([orc_process, sim_time])
-        # orchestrator multi variable execution
-        #orc_process.run(time=sim_time)
-        
-    
-    return processes
     # ------------------------------------------------------------------------------------------------------------------
 
 def run_orc_process(orc_process, sim_time):
