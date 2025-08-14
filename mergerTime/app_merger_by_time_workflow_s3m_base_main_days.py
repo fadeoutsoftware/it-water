@@ -123,7 +123,7 @@ def main(alg_collectors_settings: dict = None):
         "WORKFLOW_DSET_01": {
             "options": {
                 "intermediate_output": "Tmp",
-                "tmp_dir": "tmp"
+                "tmp_dir": alg_variables_settings['path_tmp']
             },
             "process_list": {
                 "rain_eff": [
@@ -134,7 +134,7 @@ def main(alg_collectors_settings: dict = None):
         "WORKFLOW_DSET_02": {
             "options": {
                 "intermediate_output": "Tmp",
-                "tmp_dir": "tmp"
+                "tmp_dir": alg_variables_settings['path_tmp']
             },
             "process_list": {
                 "snow_mask": [
@@ -152,15 +152,9 @@ def main(alg_collectors_settings: dict = None):
         time_start=alg_variables_application['time']['start'],
         time_end=alg_variables_application['time']['end'],
         time_frequency=alg_variables_application['time']['frequency'])
-    print( "----------------------------------------")
-    print(alg_sim_time)
-    print( "----------------------------------------")
+    
     alg_sim_time = select_time_format(alg_sim_time, time_format=alg_variables_application['time']['format'])
-    print( alg_variables_application['time']['start'] )
-    print( alg_variables_application['time']['end'] )
-    print( alg_variables_application['time']['frequency'])
-    print( "----------------------------------------")
-    print(alg_sim_time)
+    
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -180,7 +174,7 @@ def main(alg_collectors_settings: dict = None):
     # ------------------------------------------------------------------------------------------------------------------
     # time iteration(s)
     for sim_time in alg_sim_time: 
-        print("SIM TIME " + sim_time)
+        
         # time source data
         alg_data_time = select_time_range(
             time_start=sim_time,
