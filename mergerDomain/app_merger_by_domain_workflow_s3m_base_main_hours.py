@@ -44,7 +44,7 @@ import time
 
 import numpy as np
 import pandas as pd
-from multiprocessing import Pool
+from multiprocessing import Process
 
 from shybox.generic_toolkit.lib_utils_args import get_args
 from shybox.generic_toolkit.lib_utils_logging import set_logging_stream
@@ -134,37 +134,30 @@ def split_datetime_24h(start_date: str, end_date: str):
     return result
 
 
-def pool_handler():
-###TIME_START='2003-10-01 00:00'
-###TIME_END='2003-10-15 23:00'
-#above from ENV
+def run():
+    
+    ###TIME_START='2003-10-01 00:00'
+    ###TIME_END='2003-10-15 23:00'
+    #above from ENV
+
     TIME_START = os.environ.get('TIME_START')
-    print("time start %s",TIME_START)
+    
     if TIME_START is None:
         raise EnvironmentError("TIME_START environment variable not set")
     TIME_END = os.environ.get('TIME_END')
-    print("time end %s",TIME_END)
+    
     if TIME_END is None:
         raise EnvironmentError("TIME_END environment variable not set")
 
-    if os.getenv('SLURM_CPUS_PER_TASK') != None and int(os.getenv('SLURM_CPUS_PER_TASK')) < 24: 
+    iTasks = os.getenv('SLURM_CPUS_PER_TASK')
+    if iTasks is None:
+        iTasks = os.cpu_count()
+    else:
+        iTasks = int(iTasks)
+
+    if iTasks < 24: 
         print("WARNING - Less core allocated than the 24h thread pool's size")
     
-    p = Pool(24)
-    intervals = split_datetime_24h(TIME_START,TIME_END)
-    print("intervals %s", intervals)
-    p.map(main, intervals) 
-
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-# script main
-def main(work_data):
-
-    
-    if work_data[0] == "" or work_data[1] =="":
-        raise Exception("Parallel execution : Missing parameters for start/end date")
-        
     # ------------------------------------------------------------------------------------------------------------------
     # get file settings
     alg_file_settings, alg_time_settings = get_args(settings_folder=os.path.dirname(os.path.realpath(__file__)))
@@ -190,7 +183,7 @@ def main(work_data):
     collector_data.view(table_print=False)
     
     # support variable used to compose log file with start time and end time (required for each process)
-    log_file_name = alg_variables_settings['file_log'] + "_" + work_data[0] + " " + work_data[1] + ".log"
+    log_file_name = alg_variables_settings['file_log'] + "_" + TIME_START + " " + TIME_END + ".log"
 
     # set logging stream
     set_logging_stream(
@@ -237,15 +230,6 @@ def main(work_data):
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
-    # method to organize time information
-    alg_sim_time = select_time_range(
-        time_start=work_data[0],
-        time_end=work_data[1],
-        time_frequency=alg_variables_application['time']['frequency'])
-    alg_sim_time = select_time_format(alg_sim_time, time_format=alg_variables_application['time']['format'])
-    # ------------------------------------------------------------------------------------------------------------------
-
-    # ------------------------------------------------------------------------------------------------------------------
     # define geo obj
     geo_data = DataLocal(
         path=alg_variables_application['geo']['terrain']['path'],
@@ -259,43 +243,32 @@ def main(work_data):
     )
     # ------------------------------------------------------------------------------------------------------------------
 
-    # ------------------------------------------------------------------------------------------------------------------
-    # time iteration(s)
-    for sim_time in alg_sim_time:
+    
+    run_parametes = []
+    intervals = split_datetime_24h(TIME_START,TIME_END)
+    # start period
+    run_parametes.append(intervals[0])
+    # end period
+    run_parametes.append(intervals[1])
+    # variables
+    run_parametes.append(alg_variables_application)
+    # configuration
+    run_parametes.append(configuration)
+    # geodata
+    run_parametes.append(geo_data)
+    
+    orc_processes = list(map(build_orc_process, intervals))
+    
 
-        # iterate over src datasets
-        data_src_list = []
-        for data_src_key, data_src_settings in alg_variables_application['data_source'].items():
+    processes = []
 
-            data_src_obj = create_src_dataset(
-                file_name=data_src_settings['file_name'], file_path=data_src_settings['path'],
-                file_time=sim_time)
+    for idx, (orc_process, sim_time) in enumerate(orc_processes):
+        p = Process(target=run_orc_process, args=(orc_process, sim_time))
+        processes.append(p)
+        p.start()
 
-            data_src_list.append(data_src_obj)
-
-        # iterate over dst datasets
-        data_dst_list = []
-        for data_dst_key, data_dst_settings in alg_variables_application['data_destination'].items():
-
-            data_dst_obj = create_dst_dataset(
-                file_name=data_dst_settings['file_name'], file_path=data_dst_settings['path'],
-                file_time=sim_time, file_variable=data_dst_settings['variable'],
-                vars_data=data_dst_settings['vars_data'],
-                vars_geo=data_dst_settings['vars_geo'], dims_geo=data_dst_settings['dims_geo'])
-
-            data_dst_list.append(data_dst_obj)
-
-        # orchestrator multi variable settings
-        orc_process = Orchestrator.multi_tile(
-            data_package_in=data_src_list, data_package_out=data_dst_list,
-            data_ref=geo_data,
-            configuration=configuration['WORKFLOW']
-        )
-
-        # orchestrator multi variable execution
-        orc_process.run(time=sim_time)
-
-    # ------------------------------------------------------------------------------------------------------------------
+    for p in processes:
+        p.join()
 
     # ------------------------------------------------------------------------------------------------------------------
     # info algorithm (end)
@@ -311,7 +284,67 @@ def main(work_data):
     # ------------------------------------------------------------------------------------------------------------------
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+def build_orc_process(run_params):
+
+    if run_params[0] == "" or run_params[1] =="":
+        raise Exception("Parallel execution : Missing parameters for start/end date")
+    
+    alg_variables_application = run_params[2]
+    configuration = run_params[3]
+    geo_data = run_params[4]
+
+    # array of the processes to run
+    processes = []
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    # method to organize time information
+    alg_sim_time = select_time_range(
+        time_start=run_params[0],
+        time_end=run_params[1],
+        time_frequency=alg_variables_application['time']['frequency'])
+    alg_sim_time = select_time_format(alg_sim_time, time_format=alg_variables_application['time']['format'])
+    # ------------------------------------------------------------------------------------------------------------------
+
+    
+    # ------------------------------------------------------------------------------------------------------------------
+    # time iteration(s)
+    for sim_time in alg_sim_time:
+
+        # iterate over src datasets
+        data_src_list = []
+        for data_src_key, data_src_settings in alg_variables_application['data_source'].items():
+            data_src_obj = create_src_dataset(
+                file_name=data_src_settings['file_name'], file_path=data_src_settings['path'],
+                file_time=sim_time)
+            data_src_list.append(data_src_obj)
+
+        # iterate over dst datasets
+        data_dst_list = []
+        for data_dst_key, data_dst_settings in alg_variables_application['data_destination'].items():
+            data_dst_obj = create_dst_dataset(
+                file_name=data_dst_settings['file_name'], file_path=data_dst_settings['path'],
+                file_time=sim_time, file_variable=data_dst_settings['variable'],
+                vars_data=data_dst_settings['vars_data'],
+                vars_geo=data_dst_settings['vars_geo'], dims_geo=data_dst_settings['dims_geo'])
+            data_dst_list.append(data_dst_obj)
+
+        # orchestrator multi variable settings
+        orc_process = Orchestrator.multi_tile(
+            data_package_in=data_src_list, data_package_out=data_dst_list,
+            data_ref=geo_data,
+            configuration=configuration['WORKFLOW']
+        )
+
+
+        processes.append([orc_process, sim_time])
+        # orchestrator multi variable execution
+        #orc_process.run(time=sim_time)
+    
+    return processes
+    # ------------------------------------------------------------------------------------------------------------------
+
+def run_orc_process(orc_process, sim_time):
+    orc_process.run(time=sim_time)
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -365,7 +398,7 @@ def create_src_dataset(file_name: str, file_path: str, file_time: pd.Timestamp) 
 # call script from external library
 if __name__ == "__main__":
     # run script
-    pool_handler()
+    run()
 # ----------------------------------------------------------------------------------------------------------------------
 
 
