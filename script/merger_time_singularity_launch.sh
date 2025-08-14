@@ -10,8 +10,6 @@ path_log="/mnt/c/Users/m.menapace.FADEOUT/Documents/Fadeout/Projects/IT-WATER/it
 path_geo="/mnt/c/Users/m.menapace.FADEOUT/Documents/Fadeout/Projects/IT-WATER/it-water/script/data/case_study_merger_time/static/"
 path_tmp="/mnt/c/Users/m.menapace.FADEOUT/Documents/Fadeout/Projects/IT-WATER/it-water/script/data/case_study_merger_time/tmp/"
 
-pwd 
-ls
 
 singularity exec --writable-tmpfs \
  --env PATH_APP=/app/exec/ \
