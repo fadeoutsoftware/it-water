@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """
-SHYBOX - Snow HYdro toolBOX - WORKFLOW CONVERTER BASE
+SHYBOX - Snow HYdro toolBOX - WORKFLOW CONVERTER BASE [HMC
 
-__date__ = '20250310'
+__date__ = '20250716'
 __version__ = '1.0.0'
 __author__ =
     'Fabio Delogu (fabio.delogu@cimafoundation.org),
@@ -16,12 +16,13 @@ Examples of environment variables declarations:
 DOMAIN_NAME='marche';
 TIME_START='1981-01-01';
 TIME_END='1981-01-03';
-PATH_SRC='/home/fabio/Desktop/shybox/dset/itwater';
+PATH_SRC_BY_S3M='/home/fabio/Desktop/shybox/dset/itwater';
+PATH_SRC_BY_BIAS_CORRECTION='/home/fabio/Desktop/shybox/dset/itwater';
 PATH_DST='/home/fabio/Desktop/shybox/dset/itwater'
 PATH_LOG=$HOME/dataset_base/log/;
 
 Version(s):
-20250310 (1.0.0) --> Beta release for shybox package
+20250716 (1.0.0) --> Beta release for shybox package (hmc datasets converter base configuration)
 """
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -62,7 +63,7 @@ project_name = 'shybox'
 alg_name = 'Workflow for datasets converter base configuration'
 alg_type = 'Package'
 alg_version = '1.0.0'
-alg_release = '2025-03-10'
+alg_release = '2025-07-16'
 # ----------------------------------------------------------------------------------------------------------------------
 
 
@@ -140,6 +141,16 @@ def main(alg_collectors_settings: dict = None):
                     {"function": "interpolate_data", "method": 'nn', "max_distance": 22000, "neighbours": 7,
                      "fill_value": np.nan},
                     {"function": "mask_data_by_ref", "ref_value": -9999, "mask_no_data": np.nan}
+                ],
+                "wind": [
+                    {"function": "interpolate_data", "method": 'nn', "max_distance": 22000, "neighbours": 7,
+                     "fill_value": np.nan},
+                    {"function": "mask_data_by_ref", "ref_value": -9999, "mask_no_data": np.nan}
+                ],
+                "snow_mask": [
+                    {"function": "interpolate_data", "method": 'nn', "max_distance": 22000, "neighbours": 7,
+                     "fill_value": np.nan},
+                    {"function": "mask_data_by_ref", "ref_value": -9999, "mask_no_data": np.nan}
                 ]
             }
         }
@@ -195,7 +206,7 @@ def main(alg_collectors_settings: dict = None):
             file_format=None, file_mode=None, file_variable='rain',
             file_template={
                 "dims_geo": {"lon": "longitude", "lat": "latitude", "nt": "time"},
-                "vars_data": {"Rain": "rain"}
+                "vars_data": {"RAIN_EFF": "rain"}
             },
             time_signature='period',
             time_reference=start_data_time, time_period=period_data_time, time_freq='h', time_direction='forward',
@@ -249,7 +260,37 @@ def main(alg_collectors_settings: dict = None):
             time_signature='period',
             time_reference=start_data_time, time_period=period_data_time, time_freq='h', time_direction='forward',
         )
+        # wind source data
+        file_name = fill_string(
+            alg_variables_application['data_source']['wind']['file_name'],
+            time_source=sim_time, domain_name=alg_variables_application['info']['domain_name'])
+        wind_data = DataLocal(
+            path=alg_variables_application['data_source']['wind']['path'],
+            file_name=file_name,
+            file_format=None, file_mode=None, file_variable='wind',
+            file_template={
+                "dims_geo": {"lon": "longitude", "lat": "latitude", "nt": "time"},
+                "vars_data": {"Wind": "wind"}
+            },
+            time_signature='period',
+            time_reference=start_data_time, time_period=period_data_time, time_freq='h', time_direction='forward',
+        )
 
+        # wind source data
+        file_name = fill_string(
+            alg_variables_application['data_source']['snow_mask']['file_name'],
+            time_source=sim_time, domain_name=alg_variables_application['info']['domain_name'])
+        snow_mask_data = DataLocal(
+            path=alg_variables_application['data_source']['snow_mask']['path'],
+            file_name=file_name,
+            file_format=None, file_mode=None, file_variable='snow_mask',
+            file_template={
+                "dims_geo": {"lon": "longitude", "lat": "latitude", "nt": "time"},
+                "vars_data": {"SNOW_MASK": "snow_mask"}
+            },
+            time_signature='period',
+            time_reference=start_data_time, time_period=period_data_time, time_freq='h', time_direction='forward',
+        )
 
         # destination data
         file_name = fill_string(
@@ -260,7 +301,8 @@ def main(alg_collectors_settings: dict = None):
             path=alg_variables_application['data_destination']['path'],
             file_name=file_name,
             time_signature='step',
-            file_format='netcdf', file_mode='grid', file_variable=['rain', 'air_t', 'rh', 'inc_rad'],
+            file_format='netcdf', file_mode='grid',
+            file_variable=['rain', 'air_t', 'rh', 'inc_rad', 'wind', 'snow_mask'],
             file_type=alg_variables_application['data_destination']['type'],
             file_template={
                 "dims_geo": {"longitude": "X", "latitude": "Y", "time": "time"},
@@ -269,13 +311,16 @@ def main(alg_collectors_settings: dict = None):
                     "rain": "Rain",
                     "air_temperature": "AirTemperature",
                     "relative_humidity": "RelHumidity",
-                    "incoming_radiation": "IncRadiation"}
+                    "incoming_radiation": "IncRadiation",
+                    "wind": "Wind",
+                    "snow_mask": "SnowMask"}
             },
             time_period=1, time_format='%Y%m%d%H%M')
 
         # orchestrator settings
         orc_process = Orchestrator.multi_variable(
-            data_package_in=[rain_data, airt_data, rh_data, inc_rad_data], data_package_out=output_data,
+            data_package_in=[rain_data, airt_data, rh_data, inc_rad_data, wind_data, snow_mask_data],
+            data_package_out=output_data,
             data_ref=geo_data,
             configuration=configuration['WORKFLOW']
         )
