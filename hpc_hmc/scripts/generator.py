@@ -43,13 +43,18 @@ def loadControlFile(controlFile: str):
         for key in required:
             if key not in params:
                 raise ValueError(f"Missing required parameter: {key}")
+
         # Check date formats
         date_format = "%Y-%m-%d %H:%M"
         try:
-            datetime.strptime(params["startTime"], date_format)
-            datetime.strptime(params["endTime"], date_format)
+            datetime.strptime(params["startTime"], date_format)            
         except Exception:
-            raise ValueError("startTime or endTime has invalid format, expected 'YYYY-MM-DD HH:MM'")
+            raise ValueError("startTime has invalid format, expected 'YYYY-MM-DD HH:MM', provided: " + params["startTime"])
+        try:
+            datetime.strptime(params["endTime"], date_format)          
+        except Exception:
+            raise ValueError("endTime has invalid format, expected 'YYYY-MM-DD HH:MM', provided: " + params["endTime"])
+
         # Check file names are non-empty strings
         if not isinstance(params["periodsFileName"], str) or not params["periodsFileName"].strip():
             raise ValueError("periodsFileName must be a non-empty string")
