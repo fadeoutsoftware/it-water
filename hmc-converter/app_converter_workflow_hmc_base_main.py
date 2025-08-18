@@ -33,6 +33,7 @@ import time
 
 import numpy as np
 import pandas as pd
+from multiprocessing import Process
 
 from shybox.generic_toolkit.lib_utils_args import get_args
 from shybox.generic_toolkit.lib_utils_logging import set_logging_stream
@@ -178,6 +179,9 @@ def main(alg_collectors_settings: dict = None):
         },
         time_signature=None
     )
+
+    orc_processes = []
+
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -325,9 +329,19 @@ def main(alg_collectors_settings: dict = None):
             configuration=configuration['WORKFLOW']
         )
         # orchestrator exec
-        orc_process.run(time=pd.date_range(start=start_data_time, end=end_data_time, freq='h'))
-
+        #orc_process.run(time=pd.date_range(start=start_data_time, end=end_data_time, freq='h'))
+        orc_processes.append([orc_process,sim_time])
     # ------------------------------------------------------------------------------------------------------------------
+    print("Processes count : " + str(len(orc_processes)))
+    sys_processes = []
+    for (orc_processes, sim_time) in orc_processes:
+        p = Process(target=run_orc_process, args=(orc_processes, sim_time))
+        sys_processes.append(p)
+        p.start()
+
+    for p in sys_processes:
+        p.join()
+
 
     # ------------------------------------------------------------------------------------------------------------------
     # info algorithm (end)
@@ -340,11 +354,13 @@ def main(alg_collectors_settings: dict = None):
     logger_stream.info(logger_arrow.main + '... END')
     logger_stream.info(logger_arrow.main + 'Bye, Bye')
     logger_stream.info(logger_arrow.arrow_main_break)
-    # ------------------------------------------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------------------------------------------
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-
+def run_orc_process(orc_process, sim_time):
+    orc_process.run(time=sim_time)
 
 # ----------------------------------------------------------------------------------------------------------------------
 # call script from external library
