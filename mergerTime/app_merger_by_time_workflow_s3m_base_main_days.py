@@ -53,6 +53,7 @@ from shybox.dataset_toolkit.dataset_handler_local import DataLocal
 # fx imported in the PROCESSES (will be used in the global variables PROCESSES) --> DO NOT REMOVE
 from shybox.processing_toolkit.lib_proc_merge import merge_data_by_time
 
+
 # set logger
 logger_stream = logging.getLogger(logger_name)
 logger_stream.setLevel(logging.ERROR)
@@ -315,9 +316,20 @@ def mapper(work_data):
             configuration=work_data[4]
         )
 
-
-    orc_process.run(time=work_data[0],group='by_time')
-    
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            orc_process.run(time=work_data[0], group='by_time')
+            break
+        except BrokenPipeError as error:
+            if error.errno == 108:
+                if attempt < max_retries - 1:
+                    time.sleep((attempt + 1) * 2)  # Increasing delay: 2s, 4s, 6s
+                    continue
+                else:
+                    raise # After max retries, exit with the error
+            else:
+                raise
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
