@@ -12,7 +12,6 @@
     "variables": {
       "lut": {
         "user": {
-          "path_geo": "/home/fabio/Desktop/shybox/dset/itwater/static/",
           "time_source": null, "time_destination": null,
           "time_rounding": "D", "time_frequency": "D", "time_direction": "forward",
           "file_log": "{execution_name}_{domain_name}.log",
@@ -23,7 +22,8 @@
           "time_start": "TIME_START", "time_end": "TIME_END",
           "path_source_by_s3m": "PATH_SRC_BY_S3M", "path_source_by_bc": "PATH_SRC_BY_BIAS_CORRECTION",
           "path_destination": "PATH_DST",
-          "path_app": "PATH_APP", "path_log": "PATH_LOG", "path_tmp": "PATH_TMP"
+          "path_app": "PATH_APP", "path_log": "PATH_LOG", "path_tmp": "PATH_TMP",
+          "path_geo":"PATH_GEO"
         }
       },
       "format": {
