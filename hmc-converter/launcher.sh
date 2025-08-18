@@ -7,4 +7,4 @@ export PYTHONPATH="${PYTHONPATH}:/app/shybox"
 
 
 
-python /app/shybox/workflow/converter/app_converter_workflow_s3m_base_main.py -settings /app/shybox/workflow/converter/app_converter_workflow_s3m_base.json -time "2025-03-26 12:00"
+python /app/shybox/workflow/converter/app_converter_workflow_hmc_base_main.py -settings app_converter_workflow_hmc_base.json -time "2025-03-26 12:00"

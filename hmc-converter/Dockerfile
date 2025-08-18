@@ -248,8 +248,8 @@ WORKDIR /app/shybox/workflow/converter
 COPY venvSetup.sh /app/shybox/workflow/converter
 RUN /app/shybox/workflow/converter/venvSetup.sh
 
-COPY app_converter_workflow_s3m_base.json /app/shybox/workflow/converter
-COPY app_converter_workflow_s3m_base_main.py /app/shybox/workflow/converter
+COPY app_converter_workflow_hmc_base.json /app/shybox/workflow/converter
+COPY app_converter_workflow_hmc_base_main.py /app/shybox/workflow/converter
 
 COPY launcher.sh /app/shybox/workflow/converter
 ENTRYPOINT ["./launcher.sh"]
