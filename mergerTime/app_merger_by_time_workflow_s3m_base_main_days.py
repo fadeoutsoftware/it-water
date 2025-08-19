@@ -316,7 +316,7 @@ def mapper(work_data):
             configuration=work_data[4]
         )
 
-    max_retries = 3
+    max_retries = 5
     for attempt in range(max_retries):
         try:
             orc_process.run(time=work_data[0], group='by_time')
@@ -330,6 +330,12 @@ def mapper(work_data):
                     raise # After max retries, exit with the error
             else:
                 raise
+        except ValueError:
+            if attempt < max_retries - 1:
+                    time.sleep((attempt + 1) * 2)  # Increasing delay: 2s, 4s, 6s
+                    continue
+            else:
+                raise # After max retries, exit with the error
     return
 
 # ----------------------------------------------------------------------------------------------------------------------
