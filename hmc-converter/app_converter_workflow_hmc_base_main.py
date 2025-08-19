@@ -360,7 +360,20 @@ def main(alg_collectors_settings: dict = None):
 
 # ----------------------------------------------------------------------------------------------------------------------
 def run_orc_process(orc_process, sim_time):
-    orc_process.run(time=sim_time)
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            orc_process.run(time=sim_time)
+            break
+        except BrokenPipeError as error:
+            if error.errno == 108:
+                if attempt < max_retries - 1:
+                    time.sleep((attempt + 1) * 2)  # Increasing delay: 2s, 4s, 6s
+                    continue
+                else:
+                    raise # After max retries, exit with the error
+            else:
+                raise
 
 # ----------------------------------------------------------------------------------------------------------------------
 # call script from external library
