@@ -125,7 +125,8 @@
         "sTimeRestart": "{time_restart}",
         "iSimLength": "{time_period}",
         "iTcMax": 0,
-        "iTVeg": 800
+        "iTVeg": 800,
+        "iFlagDynVeg" : 0
       },
       "by_pattern": {
         "pattern_dt": {
