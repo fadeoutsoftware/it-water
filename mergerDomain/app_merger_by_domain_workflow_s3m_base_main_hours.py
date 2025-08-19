@@ -257,6 +257,7 @@ def run():
         p = Process(target=run_orc_process, args=(orc_processes, sim_time))
         sys_processes.append(p)
         p.start()
+        time.sleep(2)
 
     for p in sys_processes:
         p.join()
