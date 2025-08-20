@@ -5,7 +5,7 @@
 #SBATCH --mem=64G
 #SBATCH --partition=g100_usr_prod
 #SBATCH --time=0-12:00:00			 	 # Time limit days-hrs:min:sec
-#SBATCH --output=/g100_scratch/userexternal/mmenapac/shared/merger_domain_logs/rcp45/jobs/merger_domain_%A.out
+#SBATCH --output=/g100_scratch/userexternal/mmenapac/shared/merger_domain_logs/rcp45/merger_domain_%A.out
 #SBATCH --cpus-per-task=24
 # ----------------------------------------------------------------------------------------
 
@@ -40,10 +40,7 @@ do
 		path_data_i=${path_data}/${SLURM_JOBID}/${i}
 		mkdir -p ${path_data_i}
 		
-		path_geo_i=${path_geo_tmp}/${SLURM_JOBID}/${i}
-		mkdir -p ${path_geo_i}
-		cp -a ${path_geo}/. ${path_geo_i}/
-
+	
 		echo " ==> Scheduling "${time_start}"-"${time_end}" ..."
 		srun  --ntasks=1 --nodes=1 --cpus-per-task=$SLURM_CPUS_PER_TASK singularity exec --writable-tmpfs \
 		 --env PATH_APP=/app/exec/ \
@@ -54,7 +51,7 @@ do
 		 --env PATH_GEO=/app/exec/data/static \
 		 --env TIME_START="${time_start}" \
 		 --env TIME_END="${time_end}" \
-		 --bind ${path_data_i}:/app/exec/data/,${path_input}:/app/exec/data/input,${path_destination}:/app/exec/data/output,${path_geo_i}:/app/exec/data/static,${path_log}:/app/exec/data/logs,\
+		 --bind ${path_data_i}:/app/exec/data/,${path_input}:/app/exec/data/input,${path_destination}:/app/exec/data/output,${path_geo}:/app/exec/data/static \
 		 mergerdomain.sif /app/shybox/workflow/merger/launcher_hours.sh &
 done
 
@@ -65,8 +62,6 @@ for (( i = 1; i < $iDays; i++ ))
 do
 	path_data_i=${path_data}/${SLURM_JOBID}/${i}
 	rm -rf ${path_data_i}
-	path_geo_i=${path_geo_tmp}/${SLURM_JOBID}/${i}
-	rm -rf ${path_geo_i}
 done
 
 echo " ==> Completed Merger by domain [JOB ID "${SLURM_JOBID}"]"

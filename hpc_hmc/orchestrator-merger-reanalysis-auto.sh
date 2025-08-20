@@ -22,7 +22,7 @@ do
 
 
 	calendar=${time_start:0:7}	
-	calendar=/g100_work/IscrC_ITWATER2/calendar/rcp85/${calendar//-/}.time
+	calendar=/g100_work/IscrC_ITWATER2/calendar/reanalysis/${calendar//-/}.time
 
 	echo " ==> Scheduling merger by domain with calendar file "${calendar}" ..."
 	if [ $i == 1 ]; then

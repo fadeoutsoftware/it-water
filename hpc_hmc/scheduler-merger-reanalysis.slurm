@@ -27,7 +27,7 @@ source venv/bin/activate
 # Generate periods (start stop managed internally by the script, relying on control.json file)
 echo " ==> Generating new periods"
 
-control_file="./scheduler/control-merger-reanalysis."${id}".json"
+control_file="./scheduler/control-merger-reanalysis-"${id}".json"
 periods_file="periods-merger-reanalysis."
 periods_file="${periods_file}${id}"
 
