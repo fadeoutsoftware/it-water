@@ -87,10 +87,6 @@
         "wind": {
           "path": "{path_source_by_bc}/V/%Y/",
           "file_name": "V_{time_source}.nc"
-        },
-        "snow_mask": {
-          "path": "{path_source_by_s3m}/SnowMask/%Y/",
-          "file_name": "SNOWMASK_{time_source}.nc"
         }
       },
       "data_destination": {
@@ -100,7 +96,7 @@
       },
       "log": {
         "path": "{path_log}",
-        "file_name": "example_converter_hmc.txt"
+        "file_name": "example_converter_hmc_forcing.txt"
       },
       "tmp": {
         "path": "{path_tmp}",
