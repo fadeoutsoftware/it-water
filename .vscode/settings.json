@@ -1,4 +1,7 @@
 {
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportMissingImports": "none"
+    },
     "python.testing.unittestArgs": [
         "-v",
         "-s",
