@@ -147,11 +147,6 @@ def main(alg_collectors_settings: dict = None):
                     {"function": "interpolate_data", "method": 'nn', "max_distance": 22000, "neighbours": 7,
                      "fill_value": np.nan},
                     {"function": "mask_data_by_ref", "ref_value": -9999, "mask_no_data": np.nan}
-                ],
-                "snow_mask": [
-                    {"function": "interpolate_data", "method": 'nn', "max_distance": 22000, "neighbours": 7,
-                     "fill_value": np.nan},
-                    {"function": "mask_data_by_ref", "ref_value": -9999, "mask_no_data": np.nan}
                 ]
             }
         }
