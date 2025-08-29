@@ -181,6 +181,7 @@ def main(alg_collectors_settings: dict = None):
 
     # ------------------------------------------------------------------------------------------------------------------
     # time iteration(s)
+
     for sim_time in alg_sim_time:
 
         # time source data
@@ -310,12 +311,13 @@ def main(alg_collectors_settings: dict = None):
         )
         # orchestrator exec
         #orc_process.run(time=pd.date_range(start=start_data_time, end=end_data_time, freq='h'))
-        orc_processes.append([orc_process,sim_time])
+        launch_time = pd.date_range(start=start_data_time, end=end_data_time, freq='h')
+        orc_processes.append([orc_process,launch_time])
     # ------------------------------------------------------------------------------------------------------------------
     print("Processes count : " + str(len(orc_processes)))
     sys_processes = []
-    for (orc_processes, sim_time) in orc_processes:
-        p = Process(target=run_orc_process, args=(orc_processes, sim_time))
+    for (orc_process, sim_time) in orc_processes:
+        p = Process(target=run_orc_process, args=(orc_process, sim_time))
         sys_processes.append(p)
         p.start()
 
