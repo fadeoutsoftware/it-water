@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-SHYBOX - Snow HYdro toolBOX - WORKFLOW CONVERTER BASE [HMC
+SHYBOX - Snow HYdro toolBOX - WORKFLOW CONVERTER BASE UPDATING [HMC]
 
 __date__ = '20250716'
 __version__ = '1.0.0'
@@ -123,7 +123,6 @@ def main(alg_collectors_settings: dict = None):
                 "tmp_dir": alg_variables_settings['path_tmp']
             },
             "process_list": {
-                
                 "snow_mask": [
                     {"function": "interpolate_data", "method": 'nn', "max_distance": 22000, "neighbours": 7,
                      "fill_value": np.nan},
@@ -175,7 +174,7 @@ def main(alg_collectors_settings: dict = None):
         start_data_time = select_time_format(start_data_time, time_format='%Y-%m-%d %H:%M')
         end_data_time = select_time_format(end_data_time, time_format='%Y-%m-%d %H:%M')
 
-        # Snow Mask data
+        # wind snow mask data
         file_name = fill_string(
             alg_variables_application['data_source']['snow_mask']['file_name'],
             time_source=sim_time, domain_name=alg_variables_application['info']['domain_name'])
@@ -206,8 +205,7 @@ def main(alg_collectors_settings: dict = None):
             file_template={
                 "dims_geo": {"longitude": "X", "latitude": "Y", "time": "time"},
                 "vars_geo": {"longitude": "X", "latitude": "Y"},
-                "vars_data": {
-                    "snow_mask": "SnowMask"}
+                "vars_data": {"snow_mask": "SnowMask"}
             },
             time_period=1, time_format='%Y%m%d%H%M')
 
@@ -220,8 +218,9 @@ def main(alg_collectors_settings: dict = None):
         )
         # orchestrator exec
         #orc_process.run(time=pd.date_range(start=start_data_time, end=end_data_time, freq='h'))
-        orc_processes.append([orc_process,sim_time])
-    # ------------------------------------------------------------------------------------------------------------------
+        launch_time = pd.date_range(start=start_data_time, end=end_data_time, freq='h')
+        orc_processes.append([orc_process,launch_time])
+
     print("Processes count : " + str(len(orc_processes)))
     sys_processes = []
     for (orc_processes, sim_time) in orc_processes:
@@ -231,7 +230,7 @@ def main(alg_collectors_settings: dict = None):
 
     for p in sys_processes:
         p.join()
-
+    # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
     # info algorithm (end)
@@ -244,8 +243,7 @@ def main(alg_collectors_settings: dict = None):
     logger_stream.info(logger_arrow.main + '... END')
     logger_stream.info(logger_arrow.main + 'Bye, Bye')
     logger_stream.info(logger_arrow.arrow_main_break)
-
-# ------------------------------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -270,6 +268,9 @@ def run_orc_process(orc_process, sim_time):
                     continue
             else:
                 raise # After max retries, exit with the error
+
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 # ----------------------------------------------------------------------------------------------------------------------
 # call script from external library
