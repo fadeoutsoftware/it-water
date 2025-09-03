@@ -37,5 +37,5 @@ python3 ./scripts/merger/generator.py --controlFile=$control_file
 echo " ==> Scheduling new run..."
 ./orchestrator-merger-rcp45-auto.sh $periods_file $id
 
-echo " ==> Scheduler complted, bye bye!"
+echo " ==> Scheduler completed, bye bye!"
 echo " ==================================================================================="
