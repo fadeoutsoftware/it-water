@@ -1,16 +1,17 @@
-AdigeDomain
-BasilicataDomain
-CalabriaDomain
-FriuliDomain
-GarganoDomain
-LazioDomain
-LiguriaDomain
-LiriDomain
-MarcheDomain
-PoBasin
-PugliaDomain
-RomagnaDomain
-SardegnaDomain
-SiciliaDomain
-TevereBasin
-ToscanaDomain
+ArrayTaskID       Dominio
+1                 AdigeDomain
+2                 BasilicataDomain          
+3                 CalabriaDomain          
+4                 FriuliDomain
+5                 GarganoDomain
+6                 LazioDomain
+7                 LiguriaDomain
+8                 LiriDomain
+9                 MarcheDomain
+10                PoBasin
+11                PugliaDomain
+12                RomagnaDomain
+13                SardegnaDomain
+14                SiciliaDomain
+15                TevereBasin
+16                ToscanaDomain
