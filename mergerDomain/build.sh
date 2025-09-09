@@ -5,4 +5,4 @@ dos2unix ./app_merger_by_domain_workflow_s3m_base.json
 dos2unix ./app_merger_by_domain_workflow_s3m_base_main.py
 dos2unix ./venvSetup.sh
 
-docker build --progress=plain -t it-water/mergerdomain:dev . 
+docker build --no-cache --progress=plain -t it-water/mergerdomain:dev . 

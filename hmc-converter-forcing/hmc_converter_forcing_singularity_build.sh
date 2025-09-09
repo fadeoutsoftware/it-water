@@ -6,7 +6,7 @@ rm hmc-converter-forcing.tar
 dos2unix ./launcher.sh
 dos2unix ./app_converter_workflow_s3m_base.json
 dos2unix ./app_converter_workflow_s3m_base_main.py
-
+dos2unix ./venvSetup.sh
 # Build docker image
 docker build --no-cache --progress=plain -t it-water/hmc-converter-forcing:dev .
 # Save image in tar format 
