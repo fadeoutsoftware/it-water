@@ -1,4 +1,4 @@
-# Example of local execution with singularity
+    # Example of local execution with singularity
 # NOTE all folders must be declared and ABSOLUTE ! (locally referenced here)
 time_start='2003-10-01 00:00'
 time_end='2003-10-05 23:00'
