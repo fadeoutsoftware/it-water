@@ -100,8 +100,8 @@
       "time": {
         "start": "{time_start}",
         "end": "{time_end}",
-        "frequency": "h",
-        "format": "%Y-%m-%d %H:00"
+        "frequency": "d",
+        "format": "%Y-%m-%d 12:00"
       },
       "geo": {
         "terrain": {
@@ -195,11 +195,11 @@
       "data_destination": {
         "dset_01": {
           "path": "{path_destination}/%Y/%m/%d/",
-          "file_name": "REff.%Y%m%d%H%M.tiff",
+          "file_name": "SWE.%Y%m%d%H%M.tiff",
           "format": "geotiff",
           "type": null,
           "mode": "grid",
-          "variable": "REff",
+          "variable": "SWE",
           "dims_geo": {
             "longitude": "longitude",
             "latitude": "latitude"
@@ -209,16 +209,16 @@
             "latitude": "longitude"
           },
           "vars_data": {
-            "effective_rainfall": "EFFECTIVE_RAINFALL"
+            "snow_water_equivalent": "SNOW_WATER_EQUIVALENT"
           }
         },
         "dset_02": {
           "path": "{path_destination}/%Y/%m/%d/",
-          "file_name": "SnowMask.%Y%m%d%H%M.tiff",
+          "file_name": "Ice_Thickness.%Y%m%d%H%M.tiff",
           "format": "geotiff",
           "type": null,
           "mode": "grid",
-          "variable": "SnowMask",
+          "variable": "Ice_Thickness",
           "dims_geo": {
             "longitude": "longitude",
             "latitude": "latitude"
@@ -228,7 +228,7 @@
             "latitude": "longitude"
           },
           "vars_data": {
-            "snow_mask": "SNOW_MASK"
+            "ice_thickness": "ICE_THICKNESS"
           }
         }
       },
