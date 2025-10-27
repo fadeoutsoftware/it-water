@@ -212,13 +212,13 @@ def run():
                 "tmp_dir": alg_variables_settings['path_tmp']
             },
             "process_list": {
-                "REff": [
+                "SWE": [
                     {"function": "merge_data_by_ref", "method": 'nn', "max_distance": 25000, "neighbours": 7, 
                      "fill_value": np.nan,
                      "var_no_data": -9999},
                     {"function": "mask_data_by_ref", "ref_value": -9999, "mask_no_data": np.nan}
                 ],
-                "SnowMask": [
+                "Ice_Thickness": [
                     {"function": "merge_data_by_ref", "method": 'nn', "max_distance": 25000, "neighbours": 7,
                      "fill_value": np.nan, 
                      "var_no_data": 0},
@@ -372,7 +372,7 @@ def create_src_dataset(file_name: str, file_path: str, file_time: pd.Timestamp) 
     data_obj = DataLocal(
         path=file_path,
         file_name=file_name,
-        file_format="netcdf", file_mode=None, file_variable=['REff', 'SnowMask'],
+        file_format="netcdf", file_mode=None, file_variable=['SWE', 'Ice_Thickness'],
         file_template={
             "dims_geo": {"X": "longitude", "Y": "latitude", "time": "time"},
             'coords_geo': {'Longitude': 'longitude', 'Latitude': 'latitude'},
