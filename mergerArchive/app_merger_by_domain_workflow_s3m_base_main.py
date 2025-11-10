@@ -220,8 +220,7 @@ def run():
                 ],
                 "Ice_Thickness": [
                     {"function": "merge_data_by_ref", "method": 'nn', "max_distance": 25000, "neighbours": 7,
-                     "fill_value": np.nan, 
-                     "var_no_data": 0},
+                     "fill_value": -9999.0, "var_no_data": -9999.0},
                     {"function": "mask_data_by_ref", "ref_value": -9999, "mask_no_data": np.nan}
                 ]
             }
