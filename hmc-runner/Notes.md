@@ -60,11 +60,6 @@ docker run -itd -v C:\Users\m.menapace.FADEOUT\Documents\Fadeout\Projects\IT-WAT
 docker run -itd -v ~/it-water/case_study_hmc:/app/mnt_in -v ~/it-water/case_study_hmc_out:/app/mnt_out hmc-runner
 
 
-TODO : 
-- Check if reloading image from tar it works in the environment where the image was produced -> yes it does 
-- Try to reboot the machine after docker installation -> not solved 
-- Try to align the docker version between the machines -> TODO
-
 ### Testing singularity 
 Convert tar image to singularity:
 ```singularity build --sandbox  docker-archive://hmc-runner.tar```
