@@ -54,9 +54,9 @@ singularity exec --writable-tmpfs \
 #         chown -R :IscrC_IT-WATER ${path_log}${domain_name}
 # fi
 
-# echo " ==> Uptading permissions on "${path_destination}${domain_name}
+# echo " ==> Updating permissions on "${path_destination}${domain_name}
 # chmod -R 774 ${path_destination}${domain_name}
-# echo " ==> Uptading permissions on "${path_log}${domain_name}
+# echo " ==> Updating permissions on "${path_log}${domain_name}
 # chmod -R 774 ${path_log}${domain_name}
 
 echo " ==> Completed converter for "${domain_name}" [JOB ID "${SLURM_JOBID}"]"
