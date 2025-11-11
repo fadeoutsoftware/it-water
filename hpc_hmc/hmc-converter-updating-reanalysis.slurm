@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # ----------------------------------------------------------------------------------------
 # SLURM directives
 #SBATCH --account=IscrC_ITWATER2
@@ -40,10 +42,7 @@ singularity exec --writable-tmpfs \
  --env DOMAIN_NAME=${domain_name} \
  --env TIME_START=${time_start} \
  --env TIME_END=${time_end} \
- --bind ${path_data}:/app/exec/data/,\
- ${path_input_cmcc}:/app/exec/data/input/cmcc,\
- ${path_input_s3m}:/app/exec/data/input/s3m,\
- ${path_destination}:/app/exec/data/output,${path_geo}:/app/exec/data/static,${path_log}:/app/exec/data/logs,\
+ --bind ${path_data}:/app/exec/data/,${path_input_cmcc}:/app/exec/data/input/cmcc,${path_input_s3m}:/app/exec/data/input/s3m,${path_destination}:/app/exec/data/output,${path_geo}:/app/exec/data/static,${path_log}:/app/exec/data/logs,\
  hmc-converter-updating.sif /app/shybox/workflow/converter/launcher.sh
 
 echo " ==> Cleaning temp folder "${path_data}/tmp/${domain_name}
@@ -60,9 +59,9 @@ if [ $dest_owner != "IscrC_IT-WATER" ]; then
         chown -R :IscrC_IT-WATER ${path_log}${domain_name}
 fi
 
-# echo " ==> Updating permissions on "${path_destination}${domain_name}
+# echo " ==> Uptading permissions on "${path_destination}${domain_name}
 # chmod -R 774 ${path_destination}${domain_name}
-# echo " ==> Updating permissions on "${path_log}${domain_name}
+# echo " ==> Uptading permissions on "${path_log}${domain_name}
 # chmod -R 774 ${path_log}${domain_name}
 
 echo " ==> Completed converter UPDATING for "${domain_name}" [JOB ID "${SLURM_JOBID}"]"
