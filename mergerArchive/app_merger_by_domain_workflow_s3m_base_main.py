@@ -122,7 +122,8 @@ def split_datetime_24h(start_date: str, end_date: str):
     # 23 hours for each day of elaboration. The pool is fixed at 24, so the remaining following days are executed 
     # afterwards
     for j in range (nDays):
-        for i in range(24): 
+        ## NOTE Single value extracted from the range. Peculiar for merger Archive ! 
+        for i in range(12,13,1): 
             array = [] 
             dstart = dt_start + timedelta(hours=(i)) + timedelta(days=j)
             
