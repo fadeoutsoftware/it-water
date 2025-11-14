@@ -240,6 +240,8 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 WORKDIR /app/shybox
 RUN git clone https://github.com/c-hydro/shybox.git --branch itwater --single-branch /app/shybox/
 
+
+
 RUN /app/shybox/setup_conda_shybox_base.sh
 
 ENV	CONDA_PATH=/app/shybox/conda
@@ -248,9 +250,15 @@ WORKDIR /app/shybox/workflow/converter
 COPY venvSetup.sh /app/shybox/workflow/converter
 RUN /app/shybox/workflow/converter/venvSetup.sh
 
+## Local override of lib_utils_dict.py and lib_utils_time.py
+COPY ./shybox/generic_toolkit/lib_utils_dict.py /app/shybox/shybox/generic_toolkit/lib_utils_dict.py
+COPY ./shybox/generic_toolkit/lib_utils_time.py /app/shybox/shybox/generic_toolkit/lib_utils_time.py
+
 COPY app_converter_workflow_hmc_base.json /app/shybox/workflow/converter
 COPY app_converter_workflow_hmc_base_main.py /app/shybox/workflow/converter
 
 COPY launcher.sh /app/shybox/workflow/converter
+# Used to check filesystem setup 
+#ENTRYPOINT ["tail", "-f", "/dev/null"]
 ENTRYPOINT ["./launcher.sh"]
 
