@@ -109,13 +109,24 @@ RUN ./setup_fp_system_library_s3m.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE}
 # INSTALL - DOCKER SYSTEM APPS
 # clone library from github repository
 RUN git clone https://github.com/c-hydro/fp-system-app.git --branch main --single-branch /tmp/app_system/
+
+# 6007f2959aaf82c0a753993c17042f15dfebc3cd
+WORKDIR /tmp/app_system/
+# Checkout old commit to avoid compilation problems
+RUN git checkout v1.0.4
+
 # copy files from tmp to container folder(s)
 RUN cp -rf /tmp/app_system/. ${LIBS_INSTALLER_DIR} 
+# FIX FOR VERSION 3.1.6
+COPY ./setup_fp_system_app_hmc.sh ${LIBS_INSTALLER_DIR} 
+
 
 # start installer script for hmc libraries
 WORKDIR ${LIBS_INSTALLER_DIR}
 RUN pwd
-RUN ./setup_fp_system_app_s3m.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE} ${PACKAGE_HMC_DIR}
+
+
+RUN ./setup_fp_system_app_hmc.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE} ${PACKAGE_HMC_DIR}
 
 ### TODO ADD similar call in the S3M docker image generation
 
@@ -240,6 +251,8 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 WORKDIR /app/shybox
 RUN git clone https://github.com/c-hydro/shybox.git --branch itwater --single-branch /app/shybox/
 
+RUN git checkout 86d06a3ba25c53a51f0b097945f765f7e9f13752
+
 RUN /app/shybox/setup_conda_shybox_base.sh
 
 ENV	CONDA_PATH=/app/shybox/conda
@@ -247,6 +260,10 @@ ENV	CONDA_PATH=/app/shybox/conda
 WORKDIR /app/shybox/workflow/converter
 COPY venvSetup.sh /app/shybox/workflow/converter
 RUN /app/shybox/workflow/converter/venvSetup.sh
+
+## Local override of lib_utils_dict.py and lib_utils_time.py
+COPY ./shybox/generic_toolkit/lib_utils_dict.py /app/shybox/shybox/generic_toolkit/lib_utils_dict.py
+COPY ./shybox/generic_toolkit/lib_utils_time.py /app/shybox/shybox/generic_toolkit/lib_utils_time.py
 
 COPY app_converter_workflow_hmc_base.json /app/shybox/workflow/converter
 COPY app_converter_workflow_hmc_base_main.py /app/shybox/workflow/converter

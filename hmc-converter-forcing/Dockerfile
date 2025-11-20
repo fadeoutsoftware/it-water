@@ -269,7 +269,7 @@ COPY app_converter_workflow_hmc_base.json /app/shybox/workflow/converter
 COPY app_converter_workflow_hmc_base_main.py /app/shybox/workflow/converter
 
 COPY launcher.sh /app/shybox/workflow/converter
-# Used to check filesystem setup 
-#ENTRYPOINT ["tail", "-f", "/dev/null"]
+
+
 ENTRYPOINT ["./launcher.sh"]
 
