@@ -7,7 +7,7 @@
 #SBATCH --mem=8G
 #SBATCH --output=/g100_scratch/userexternal/mmenapac/shared/HMC_converter_updating_logs/reanalysis/jobs/converter_%A.out
 #SBATCH --partition=g100_usr_prod
-#SBATCH --time=0-01:00:00                                # Time limit days-hrs:min:sec
+#SBATCH --time=0-08:00:00                                # Time limit days-hrs:min:sec
 # ----------------------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ echo " =========================================================================
 echo " ==> Running converter UPDATING for "${domain_name}" [JOB ID "${SLURM_JOBID}"]"
 
 
-singularity exec --writable-tmpfs \
+srun  --ntasks=1 --nodes=1 --cpus-per-task=$SLURM_CPUS_PER_TASK singularity exec --writable-tmpfs \
  --env PATH_APP=/app/exec/ \
  --env PATH_SRC_BY_BIAS_CORRECTION=/app/exec/data/input/cmcc \
  --env PATH_SRC_BY_S3M=/app/exec/data/input/s3m \
@@ -47,22 +47,6 @@ singularity exec --writable-tmpfs \
 
 echo " ==> Cleaning temp folder "${path_data}/tmp/${domain_name}
 rm -rf ${path_data}/tmp/${domain_name}
-
-dest_owner=$(stat -c %G ${path_destination}${domain_name})
-if [ $dest_owner != "IscrC_IT-WATER" ]; then
-        echo " ==> Assign group ownership to "${path_destination}${domain_name}
-        chown -R :IscrC_IT-WATER ${path_destination}${domain_name}
-fi
-dest_owner=$(stat -c %G ${path_log}${domain_name})
-if [ $dest_owner != "IscrC_IT-WATER" ]; then
-        echo " ==> Assign group ownership to "${path_log}${domain_name}
-        chown -R :IscrC_IT-WATER ${path_log}${domain_name}
-fi
-
-# echo " ==> Uptading permissions on "${path_destination}${domain_name}
-# chmod -R 774 ${path_destination}${domain_name}
-# echo " ==> Uptading permissions on "${path_log}${domain_name}
-# chmod -R 774 ${path_log}${domain_name}
 
 echo " ==> Completed converter UPDATING for "${domain_name}" [JOB ID "${SLURM_JOBID}"]"
 echo " ==================================================================================="
