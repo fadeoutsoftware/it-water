@@ -17,7 +17,7 @@
 echo " ==================================================================================="
 echo " ==> JOB Scheduler activated"
 echo pwd;
-cd $WORK
+cd /g100_work/IscrC_IT-WATER
 
 echo " ==> activating python virtual environment"
 source .venv/bin/activate
