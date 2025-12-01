@@ -251,9 +251,12 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 WORKDIR /app/shybox
 RUN git clone https://github.com/c-hydro/shybox.git --branch itwater --single-branch /app/shybox/
 
-RUN git checkout 86d06a3ba25c53a51f0b097945f765f7e9f13752
+#RUN git checkout 4ac8b087257d6aaad6cd005932822c3b49b72c34
 
-RUN /app/shybox/setup_conda_shybox_base.sh
+## DESTINE V 1.2.9 -> testing with old Venv Setup
+RUN git checkout 9676729b940e6925df88d31ab855dddf487cc517
+
+#RUN /app/shybox/setup_conda_shybox_base.sh
 
 ENV	CONDA_PATH=/app/shybox/conda
 
@@ -270,6 +273,6 @@ COPY app_converter_workflow_hmc_base_main.py /app/shybox/workflow/converter
 
 COPY launcher.sh /app/shybox/workflow/converter
 
-
-ENTRYPOINT ["./launcher.sh"]
+ENTRYPOINT ["tail", "-f", "/dev/null"]
+#ENTRYPOINT ["./launcher.sh"]
 
