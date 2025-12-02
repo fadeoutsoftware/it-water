@@ -249,20 +249,20 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 ### New repository SHYBOX
 ### TODO initialization of ENV variables 
 WORKDIR /app/shybox
-RUN git clone https://github.com/c-hydro/shybox.git --branch itwater --single-branch /app/shybox/
+RUN git clone https://github.com/c-hydro/shybox.git --branch itwater  /app/shybox/
 
 #RUN git checkout 4ac8b087257d6aaad6cd005932822c3b49b72c34
 
 ## DESTINE V 1.2.9 -> testing with old Venv Setup
-RUN git checkout 9676729b940e6925df88d31ab855dddf487cc517
+RUN git checkout 9649b375080f0298eea3d63005f2646e19b73296
 
 #RUN /app/shybox/setup_conda_shybox_base.sh
 
 ENV	CONDA_PATH=/app/shybox/conda
 
 WORKDIR /app/shybox/workflow/converter
-COPY venvSetup.sh /app/shybox/workflow/converter
-RUN /app/shybox/workflow/converter/venvSetup.sh
+#COPY venvSetup.sh /app/shybox/workflow/converter
+#RUN /app/shybox/workflow/converter/venvSetup.sh
 
 ## Local override of lib_utils_dict.py and lib_utils_time.py
 COPY ./shybox/generic_toolkit/lib_utils_dict.py /app/shybox/shybox/generic_toolkit/lib_utils_dict.py
@@ -273,6 +273,6 @@ COPY app_converter_workflow_hmc_base_main.py /app/shybox/workflow/converter
 
 COPY launcher.sh /app/shybox/workflow/converter
 
-ENTRYPOINT ["tail", "-f", "/dev/null"]
-#ENTRYPOINT ["./launcher.sh"]
+#ENTRYPOINT ["tail", "-f", "/dev/null"]
+ENTRYPOINT ["./launcher.sh"]
 
