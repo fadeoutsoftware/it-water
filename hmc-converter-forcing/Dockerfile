@@ -255,19 +255,21 @@ RUN git clone https://github.com/c-hydro/shybox.git --branch itwater  /app/shybo
 
 ## DESTINE V 1.2.9 -> testing with old Venv Setup
 RUN git checkout 9649b375080f0298eea3d63005f2646e19b73296
+## TO BE DONE 
+RUN /app/shybox/setup_shybox_base.sh
 
-#RUN /app/shybox/setup_conda_shybox_base.sh
-
+## TO BE CHECKED
 ENV	CONDA_PATH=/app/shybox/conda
 
 WORKDIR /app/shybox/workflow/converter
-#COPY venvSetup.sh /app/shybox/workflow/converter
-#RUN /app/shybox/workflow/converter/venvSetup.sh
+COPY venvSetup.sh /app/shybox/workflow/converter
+RUN /app/shybox/workflow/converter/venvSetup.sh
 
 ## Local override of lib_utils_dict.py and lib_utils_time.py
-COPY ./shybox/generic_toolkit/lib_utils_dict.py /app/shybox/shybox/generic_toolkit/lib_utils_dict.py
-COPY ./shybox/generic_toolkit/lib_utils_time.py /app/shybox/shybox/generic_toolkit/lib_utils_time.py
+#COPY ./shybox/generic_toolkit/lib_utils_dict.py /app/shybox/shybox/generic_toolkit/lib_utils_dict.py
+#COPY ./shybox/generic_toolkit/lib_utils_time.py /app/shybox/shybox/generic_toolkit/lib_utils_time.py
 
+# ADAPTED AFTER V1.2.9 from files https://github.com/c-hydro/shybox/blob/destine/workflow/dataset/convert/
 COPY app_converter_workflow_hmc_base.json /app/shybox/workflow/converter
 COPY app_converter_workflow_hmc_base_main.py /app/shybox/workflow/converter
 
