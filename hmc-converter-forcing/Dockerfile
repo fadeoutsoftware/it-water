@@ -254,7 +254,7 @@ RUN git clone https://github.com/c-hydro/shybox.git --branch itwater  /app/shybo
 #RUN git checkout 4ac8b087257d6aaad6cd005932822c3b49b72c34
 
 ## DESTINE V 1.2.9 -> testing with old Venv Setup
-RUN git checkout 9649b375080f0298eea3d63005f2646e19b73296
+RUN git checkout a135edce9c5c4fe72bdffbc94532aeeb236966ae
 ## TO BE DONE 
 RUN /app/shybox/setup_shybox_base.sh
 
