@@ -1,5 +1,5 @@
 {
-  "__comment__" : "configuration file for the datasets information",
+  "__comment__": "configuration file for the datasets information",
   "settings": {
     "priority": {
       "reference": "environment",
@@ -12,43 +12,73 @@
     "variables": {
       "lut": {
         "user": {
-          "time_source": null, "time_destination": null,
-          "time_rounding": "D", "time_frequency": "D", "time_direction": "forward",
+          "path_source_time": null,
+          "path_destination_time": null,
+          "time_source": null,
+          "time_destination": null,
+          "time_rounding": "D",
+          "time_frequency": "D",
+          "time_direction": "forward",
           "file_log": "{execution_name}_{domain_name}.log",
-          "execution_name": "dataset_base", "execution_mode": "history"
+          "execution_name": "dataset_base",
+          "execution_mode": "history"
         },
         "environment": {
           "domain_name": "DOMAIN_NAME",
-          "time_start": "TIME_START", "time_end": "TIME_END",
-          "path_source_by_s3m": "PATH_SRC_BY_S3M", "path_source_by_bc": "PATH_SRC_BY_BIAS_CORRECTION",
+          "time_start": "TIME_START",
+          "time_end": "TIME_END",
+          "path_source_by_s3m": "PATH_SRC_BY_S3M",
+          "path_source_by_bc": "PATH_SRC_BY_BIAS_CORRECTION",
           "path_destination": "PATH_DST",
-          "path_app": "PATH_APP", "path_log": "PATH_LOG", "path_tmp": "PATH_TMP",
-          "path_geo":"PATH_GEO"
+          "path_app": "PATH_APP",
+          "path_log": "PATH_LOG",
+          "path_tmp": "PATH_TMP",
+          "path_geo": "PATH_GEO"
         }
       },
       "format": {
         "domain_name": "string",
         "path_geo": "string",
-        "path_source_by_s3m": "string", "path_source_by_bc": "string",
+        "path_source_time": "time",
+        "path_destination_time": "time",
+        "path_source_by_s3m": "string",
+        "path_source_by_bc": "string",
         "path_destination": "string",
-        "time_source": "string", "time_destination": "string", "time_direction": "string",
-        "time_start": "string", "time_end": "string",
-        "time_rounding": "string", "time_frequency": "string",
+        "time_source": "string",
+        "time_destination": "string",
+        "time_direction": "string",
+        "time_start": "string",
+        "time_end": "string",
+        "time_rounding": "string",
+        "time_frequency": "string",
         "path_app": "string",
-        "path_log": "string", "file_log": "string", "path_tmp": "string",
-        "execution_name": "string", "execution_mode": "string"
+        "path_log": "string",
+        "file_log": "string",
+        "path_tmp": "string",
+        "execution_name": "string",
+        "execution_mode": "string"
       },
       "template": {
         "domain_name": "string",
         "path_geo": "string",
-        "path_source_by_s3m": "string", "path_source_by_bc": "string",
+        "path_source_time": "%Y",
+        "path_destination_time": "%Y/%m/%d",
+        "path_source_by_s3m": "string",
+        "path_source_by_bc": "string",
         "path_destination": "string",
-        "time_source": "%Y%m%d", "time_destination": "%Y%m%d%H%M", "time_direction": "string",
-        "time_start": "%Y%m%d", "time_end": "%Y%m%d",
-        "time_rounding": "string", "time_frequency": "string",
+        "time_source": "%Y%m%d",
+        "time_destination": "%Y%m%d%H%M",
+        "time_direction": "string",
+        "time_start": "%Y%m%d",
+        "time_end": "%Y%m%d",
+        "time_rounding": "string",
+        "time_frequency": "string",
         "path_app": "string",
-        "path_log": "string", "file_log": "string", "path_tmp": "string",
-        "execution_name": "string", "execution_mode": "string"
+        "path_log": "string",
+        "file_log": "string",
+        "path_tmp": "string",
+        "execution_name": "string",
+        "execution_mode": "string"
       }
     },
     "application": {
@@ -69,18 +99,20 @@
       },
       "data_source": {
         "snow_mask": {
-          "path": "{path_source_by_s3m}/SnowMask/%Y/",
+          "path": "{path_source_by_s3m}/SnowMask/{path_source_time}",
           "file_name": "SNOWMASK_{time_source}.nc"
         }
       },
       "data_destination": {
-        "path": "{path_destination}/%Y/%m/%d/",
+        "path": "{path_destination}/{path_destination_time}",
         "file_name": "hmc.updating-grid.{time_destination}.nc",
-        "format": "netcdf", "type": "hmc", "mode": "grid"
+        "format": "netcdf",
+        "type": "hmc",
+        "mode": "grid"
       },
       "log": {
         "path": "{path_log}",
-        "file_name": "example_converter_hmc_updating.txt"
+        "file_name": "converter_hmc_itwater_updating.txt"
       },
       "tmp": {
         "path": "{path_tmp}",

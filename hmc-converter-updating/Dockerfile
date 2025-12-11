@@ -249,11 +249,12 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 ### New repository SHYBOX
 ### TODO initialization of ENV variables 
 WORKDIR /app/shybox
-RUN git clone https://github.com/c-hydro/shybox.git --branch itwater --single-branch /app/shybox/
+RUN git clone https://github.com/c-hydro/shybox.git --branch itwater  /app/shybox/
 
-RUN git checkout 86d06a3ba25c53a51f0b097945f765f7e9f13752
-
-RUN /app/shybox/setup_conda_shybox_base.sh
+## DESTINE V 1.3.1 
+RUN git checkout 0af0ee605af6fadf14eb573dca6bf259e7cd7327
+## TO BE DONE 
+RUN /app/shybox/setup_shybox_base.sh
 
 ENV	CONDA_PATH=/app/shybox/conda
 
@@ -262,9 +263,10 @@ COPY venvSetup.sh /app/shybox/workflow/converter
 RUN /app/shybox/workflow/converter/venvSetup.sh
 
 ## Local override of lib_utils_dict.py and lib_utils_time.py
-COPY ./shybox/generic_toolkit/lib_utils_dict.py /app/shybox/shybox/generic_toolkit/lib_utils_dict.py
-COPY ./shybox/generic_toolkit/lib_utils_time.py /app/shybox/shybox/generic_toolkit/lib_utils_time.py
+#COPY ./shybox/generic_toolkit/lib_utils_dict.py /app/shybox/shybox/generic_toolkit/lib_utils_dict.py
+#COPY ./shybox/generic_toolkit/lib_utils_time.py /app/shybox/shybox/generic_toolkit/lib_utils_time.py
 
+# ADAPTED AFTER V1.2.9 from files https://github.com/c-hydro/shybox/blob/destine/workflow/dataset/convert/
 COPY app_converter_workflow_hmc_base.json /app/shybox/workflow/converter
 COPY app_converter_workflow_hmc_base_main.py /app/shybox/workflow/converter
 

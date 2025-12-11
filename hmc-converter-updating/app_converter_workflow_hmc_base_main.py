@@ -1,27 +1,29 @@
 #!/usr/bin/python3
 """
-SHYBOX - Snow HYdro toolBOX - WORKFLOW CONVERTER BASE UPDATING [HMC]
+SHYBOX PACKAGE - APP PROCESSING DATASET MAIN
 
-__date__ = '20250716'
-__version__ = '1.0.0'
+__date__ = '20251126'
+__version__ = '1.2.0'
 __author__ =
     'Fabio Delogu (fabio.delogu@cimafoundation.org),
      Francesco Avanzi (francesco.avanzi@cimafoundation.org)'
 __library__ = 'shybox'
 
 General command line:
-python app_workflow_main.py -settings_file configuration.json -time "YYYY-MM-DD HH:MM"
+python app_converter_workflow_main.py -settings_file configuration.json -time "YYYY-MM-DD HH:MM"
 
 Examples of environment variables declarations:
 DOMAIN_NAME='marche';
-TIME_START='1981-01-01';
-TIME_END='1981-01-03';
-PATH_SRC_BY_S3M='/home/fabio/Desktop/shybox/dset/itwater';
-PATH_SRC_BY_BIAS_CORRECTION='/home/fabio/Desktop/shybox/dset/itwater';
-PATH_DST='/home/fabio/Desktop/shybox/dset/itwater'
-PATH_LOG=$HOME/dataset_base/log/;
+TIME_START='2024-01-04';
+TIME_END='2024-01-06';
+
+PATH_SRC_BY_S3M='/home/fabio/Desktop/shybox/dset/case_study_itwater/case_study_merger_hmc/data_dynamic/src/s3m/';
+PATH_SRC_BY_BIAS_CORRECTION='/home/fabio/Desktop/shybox/dset/case_study_itwater/case_study_merger_hmc/data_dynamic/src/cmcc';
+PATH_DST='/home/fabio/Desktop/shybox/dset/case_study_itwater/case_study_merger_hmc/data_dynamic/src'
+PATH_LOG=/home/fabio/Desktop/shybox/dset/case_study_itwater/case_study_merger_hmc/log/;
 
 Version(s):
+20251126 (1.2.0) --> Release for shybox package (hmc datasets converter base configuration)
 20250716 (1.0.0) --> Beta release for shybox package (hmc datasets converter base configuration)
 """
 
@@ -33,38 +35,30 @@ import time
 
 import numpy as np
 import pandas as pd
-from multiprocessing import Process
 
-from shybox.generic_toolkit.lib_utils_args import get_args
-from shybox.generic_toolkit.lib_utils_logging import set_logging_stream
-from shybox.generic_toolkit.lib_utils_time import select_time_range, select_time_format
-from shybox.generic_toolkit.lib_utils_string import fill_string
-
-from shybox.generic_toolkit.lib_default_args import logger_name, logger_format, logger_arrow
-from shybox.generic_toolkit.lib_default_args import collector_data
-
-from shybox.runner_toolkit.settings.driver_app_settings import DrvSettings
-from shybox.runner_toolkit.time.driver_app_time import DrvTime
+from shybox.config_toolkit.arguments_handler import ArgumentsManager
+from shybox.config_toolkit.config_handler import ConfigManager
 
 from shybox.orchestrator_toolkit.orchestrator_handler_base import OrchestratorHandler as Orchestrator
 from shybox.dataset_toolkit.dataset_handler_local import DataLocal
+from shybox.logging_toolkit.logging_handler import LoggingManager
 
 # fx imported in the PROCESSES (will be used in the global variables PROCESSES) --> DO NOT REMOVE
-from shybox.processing_toolkit.lib_proc_mask import mask_data_by_ref, mask_data_by_limits
 from shybox.processing_toolkit.lib_proc_interp import interpolate_data
+from shybox.processing_toolkit.lib_proc_mask import mask_data_by_ref
 
-# set logger
-logger_stream = logging.getLogger(logger_name)
-logger_stream.setLevel(logging.ERROR)
+from shybox.time_toolkit.lib_utils_time import (select_time_range, select_time_format)
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------------------------------------------------
 # algorithm information
 project_name = 'shybox'
-alg_name = 'Workflow for datasets converter base configuration'
+alg_name = 'Application for processing datasets'
 alg_type = 'Package'
-alg_version = '1.0.0'
-alg_release = '2025-07-16'
+alg_version = '1.2.0'
+alg_release = '2025-11-18'
 # ----------------------------------------------------------------------------------------------------------------------
 
 
@@ -73,54 +67,78 @@ alg_release = '2025-07-16'
 def main(alg_collectors_settings: dict = None):
 
     # ------------------------------------------------------------------------------------------------------------------
+    ## SETTINGS MANAGEMENT (GLOBAL)
     # get file settings
-    alg_file_settings, alg_time_settings = get_args(settings_folder=os.path.dirname(os.path.realpath(__file__)))
+    alg_args_obj = ArgumentsManager(settings_folder=os.path.dirname(os.path.realpath(__file__)))
+    alg_args_file, alg_args_time = alg_args_obj.get()
 
-    # method to initialize settings class
-    driver_settings = DrvSettings(file_name=alg_file_settings, file_time=alg_time_settings,
-                                  file_key='settings', settings_collectors=alg_collectors_settings)
+    # crete configuration object
+    alg_cfg_obj = ConfigManager.from_source(
+        alg_args_file,
+        root_key="settings",
+        auto_validate=True, auto_fill_lut=True,
+        flat_variables=True, flat_key_mode='value')
+    # view lut section
+    alg_cfg_lut = alg_cfg_obj.get_section(section='lut')
+    alg_cfg_obj.view(section=alg_cfg_lut, table_name='lut', table_print=True)
 
-    # method to configure variable settings
-    (alg_variables_settings,
-     alg_variables_collector, alg_variables_system) = driver_settings.configure_variable_by_settings()
-    # method to organize variable settings
-    alg_variables_settings = driver_settings.organize_variable_settings(
-        alg_variables_settings, alg_variables_collector)
-    # method to view variable settings
-    driver_settings.view_variable_settings(data=alg_variables_settings, mode=True)
+    # get application section
+    alg_cfg_application = alg_cfg_obj.get_section(section='application')
+    # fill application section
+    alg_cfg_application = alg_cfg_obj.fill_obj_from_lut(
+        section=alg_cfg_application,
+        resolve_time_placeholders=False, time_keys=('time_start', 'time_end', 'time_period'),
+        template_keys=('path_destination_time', 'time_destination',)
+    )
+    # view application section
+    alg_cfg_obj.view(section=alg_cfg_application, table_name='application [cfg info]', table_print=True)
 
-    # get variables application
-    alg_variables_application = driver_settings.get_variable_by_tag('application')
-    alg_variables_application = driver_settings.fill_variable_by_dict(alg_variables_application, alg_variables_settings)
-
-    # collector data
-    collector_data.view(table_print=False)
-
-    # set logging stream
-    set_logging_stream(
-        logger_name=logger_name, logger_format=logger_format,
-        logger_folder=alg_variables_settings['path_log'], logger_file=alg_variables_settings['file_log'])
+    # get workflow section
+    alg_cfg_workflow = alg_cfg_obj.get_section(section='workflow')
+    # view workflow section
+    alg_cfg_obj.view(section=alg_cfg_workflow, table_name='workflow', table_print=True)
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
+    ## LOGGING MANAGEMENT
+    # set logging instance
+    LoggingManager.setup(
+        logger_folder=alg_cfg_application['log']['path'],
+        logger_file=alg_cfg_application['log']['file_name'],
+        logger_format="%(asctime)s %(name)-15s %(levelname)-8s %(message)-80s %(filename)-20s:[%(lineno)-6s - %(funcName)-20s()]",
+        handlers=['file', 'stream'],
+        force_reconfigure=True,
+        arrow_base_len=3, arrow_prefix='-', arrow_suffix='>',
+        warning_dynamic=False, error_dynamic=False, warning_fixed_prefix="===> ", error_fixed_prefix="===> ",
+        level=10
+    )
+
+    # define logging instance
+    logging_handle = LoggingManager(
+        name="shybox_algorithm_converter_itwater_hmc_forcing",
+        level=logging.INFO, use_arrows=True, arrow_dynamic=True, arrow_tag="algorithm",
+        set_as_current=True)
+    # ------------------------------------------------------------------------------------------------------------------
+
+    # ------------------------------------------------------------------------------------------------------------------
+    ## INFO START
     # info algorithm (start)
-    logger_stream.info(logger_arrow.arrow_main_break)
-    logger_stream.info(
-        logger_arrow.main + alg_name + ' (Version: ' + alg_version + ' Release_Date: ' + alg_release + ')')
-    logger_stream.info(logger_arrow.main + 'START ... ')
-    logger_stream.info(logger_arrow.arrow_main_blank)
+    logging_handle.info_header(LoggingManager.rule_line("=", 78))
+    logging_handle.info_header(alg_name + ' (Version: ' + alg_version + ' Release_Date: ' + alg_release + ')')
+    logging_handle.info_header('START ... ', blank_after=True)
 
     # time algorithm
     start_time = time.time()
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
-    # configuration workflow
+    ## CONFIGURATION MANAGEMENT
+    # set configuration instance
     configuration = {
         "WORKFLOW": {
             "options": {
                 "intermediate_output": "Tmp",
-                "tmp_dir": alg_variables_settings['path_tmp']
+                "tmp_dir": alg_cfg_application['tmp']['path']
             },
             "process_list": {
                 "snow_mask": [
@@ -134,143 +152,125 @@ def main(alg_collectors_settings: dict = None):
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
-    # method to organize time information
-    alg_sim_time = select_time_range(
-        time_start=alg_variables_application['time']['start'],
-        time_end=alg_variables_application['time']['end'],
-        time_frequency=alg_variables_application['time']['frequency'])
-    alg_sim_time = select_time_format(alg_sim_time, time_format=alg_variables_application['time']['format'])
+    ## TIME MANAGEMENT (GLOBAL)
+    # Time generic configuration
+    alg_time_generic = select_time_range(
+        time_start=alg_cfg_application['time']['start'],
+        time_end=alg_cfg_application['time']['end'],
+        time_frequency=alg_cfg_application['time']['frequency'],
+        ensure_range=False, flat_if_single=True)
+    alg_time_period = select_time_format(alg_time_generic, time_format=alg_cfg_application['time']['format'])
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
-    # define geo obj
+    ## GEO MANAGEMENT
+    # geographic reference
     geo_data = DataLocal(
-        path=alg_variables_application['geo']['terrain']['path'],
-        file_name=alg_variables_application['geo']['terrain']['file_name'],
-        file_mode='grid', file_variable='terrain',
-        file_template={
+        path=alg_cfg_application['geo']['terrain']['path'],
+        file_name=alg_cfg_application['geo']['terrain']['file_name'],
+        file_type='grid_2d', file_format='ascii', file_mode='local', file_variable='terrain', file_io='input',
+        variable_template={
             "dims_geo": {"x": "longitude", "y": "latitude"},
             "vars_geo": {"x": "longitude", "y": "latitude"}
         },
-        time_signature=None
+        time_signature=None, time_direction=None,
+        logger=logging_handle, message=False
     )
-
-    orc_processes = []
-
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
-    # time iteration(s)
-    for sim_time in alg_sim_time:
+    # iterate over simulation time
+    for time_step in alg_time_generic:
 
-        # time source data
-        alg_data_time = select_time_range(
-            time_start=sim_time,
-            time_period=24,
-            time_frequency='h')
-        start_data_time, end_data_time = alg_data_time[0], alg_data_time[-1]
-        period_data_time = len(alg_data_time)
+        # ------------------------------------------------------------------------------------------------------------------
+        ## TIME MANAGEMENT (STEP)
+        # time data
+        time_data_length = int(alg_cfg_application['time'].get('dataset', 24))
+        time_data_reference = select_time_format(time_step, time_format=alg_cfg_application['time']['format'])
+        time_data_path = select_time_format(time_step, time_format='%Y')
+        # time analysis
+        time_anls_length = int(alg_cfg_application['time'].get('dataset', 24))
+        time_anls_period = select_time_range(time_start=time_step, time_period=time_anls_length, time_frequency='h')
+        time_anls_start = select_time_format(time_anls_period[0], time_format='%Y-%m-%d %H:%M')
+        time_anls_end = select_time_format(time_anls_period[-1], time_format='%Y-%m-%d %H:%M')
+        # ------------------------------------------------------------------------------------------------------------------
 
-        start_data_time = select_time_format(start_data_time, time_format='%Y-%m-%d %H:%M')
-        end_data_time = select_time_format(end_data_time, time_format='%Y-%m-%d %H:%M')
+        # ------------------------------------------------------------------------------------------------------------------
+        # ## SETTINGS MANAGEMENT (STEP)
+        # fill application section
+        step_cfg_application = alg_cfg_obj.fill_obj_from_lut(
+            resolve_time_placeholders=True, when=time_step, time_keys=('time_source', 'path_source_time'),
+            extra_tags={
+                'time_source': time_data_reference, "path_source_time": time_data_path},
+            section=alg_cfg_application, in_place=False,
+            template_keys=('file_time_destination',)
+        )
+        # view application section
+        alg_cfg_obj.view(section=step_cfg_application, table_name='application [cfg step]', table_print=True)
+        # ------------------------------------------------------------------------------------------------------------------
 
-        # wind snow mask data
-        file_name = fill_string(
-            alg_variables_application['data_source']['snow_mask']['file_name'],
-            time_source=sim_time, domain_name=alg_variables_application['info']['domain_name'])
-        snow_mask_data = DataLocal(
-            path=alg_variables_application['data_source']['snow_mask']['path'],
-            file_name=file_name,
-            file_format=None, file_mode=None, file_variable='snow_mask',
-            file_template={
+        # ------------------------------------------------------------------------------------------------------------------
+        ## DATASETS MANAGEMENT
+        # Snow Mask handler
+        snow_mask_handler = DataLocal(
+            path=step_cfg_application['data_source']['snow_mask']['path'],
+            file_name=step_cfg_application['data_source']['snow_mask']['file_name'],
+            file_type='grid_3d', file_format='netcdf', file_mode='local',
+            file_variable='snow_mask', file_io='input',
+            variable_template={
                 "dims_geo": {"lon": "longitude", "lat": "latitude", "nt": "time"},
                 "vars_data": {"SNOW_MASK": "snow_mask"}
             },
             time_signature='period',
-            time_reference=start_data_time, time_period=period_data_time, time_freq='h', time_direction='forward',
+            time_reference=time_data_reference, time_period=time_data_length,
+            time_freq='h', time_direction='forward',
         )
 
         # destination data
-        file_name = fill_string(
-            alg_variables_application['data_destination']['file_name'],
-            time_destination="%Y%m%d%H%M", domain_name=alg_variables_application['info']['domain_name'])
-
-        output_data = DataLocal(
-            path=alg_variables_application['data_destination']['path'],
-            file_name=file_name,
+        output_handler = DataLocal(
+            path=alg_cfg_application['data_destination']['path'],
+            file_name=alg_cfg_application['data_destination']['file_name'],
             time_signature='step',
-            file_format='netcdf', file_mode='grid',
-            file_variable=['snow_mask'],
-            file_type=alg_variables_application['data_destination']['type'],
-            file_template={
-                "dims_geo": {"longitude": "X", "latitude": "Y", "time": "time"},
-                "vars_geo": {"longitude": "X", "latitude": "Y"},
-                "vars_data": {"snow_mask": "SnowMask"}
+            file_format='netcdf', file_type='hmc', file_mode='local',
+            file_variable=['snow_mask'], file_io='output',
+            variable_template={
+                "dims_geo": {"longitude": "west_east", "latitude": "south_north", "time": "time"},
+                "coord_geo": {"Longitude": "longitude", "Latitude": "latitude"},
+                "vars_data": {
+                    "snow_mask": "SnowMask"
+                }
             },
-            time_period=1, time_format='%Y%m%d%H%M')
+            time_period=1, time_format='%Y%m%d%H%M',
+            logger=logging_handle, message=False
+        )
 
         # orchestrator settings
         orc_process = Orchestrator.multi_variable(
-            data_package_in=[snow_mask_data],
-            data_package_out=output_data,
+            data_package_in=snow_mask_handler,
+            data_package_out=output_handler,
             data_ref=geo_data,
-            configuration=configuration['WORKFLOW']
+            priority=['snow_mask'],
+            configuration=configuration['WORKFLOW'],
+            logger=logging_handle
         )
         # orchestrator exec
-        #orc_process.run(time=pd.date_range(start=start_data_time, end=end_data_time, freq='h'))
-        launch_time = pd.date_range(start=start_data_time, end=end_data_time, freq='h')
-        orc_processes.append([orc_process,launch_time])
+        orc_process.run(time=pd.date_range(start=time_anls_start, end=time_anls_end, freq='h'))
 
-    print("Processes count : " + str(len(orc_processes)))
-    sys_processes = []
-    for (orc_processes, sim_time) in orc_processes:
-        p = Process(target=run_orc_process, args=(orc_processes, sim_time))
-        sys_processes.append(p)
-        p.start()
-
-    for p in sys_processes:
-        p.join()
     # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
+    ## INFO END
     # info algorithm (end)
     alg_time_elapsed = round(time.time() - start_time, 1)
 
-    logger_stream.info(logger_arrow.arrow_main_blank)
-    logger_stream.info(
-        logger_arrow.main + alg_name + ' (Version: ' + alg_version + ' Release_Date: ' + alg_release + ')')
-    logger_stream.info(logger_arrow.main + 'TIME ELAPSED: ' + str(alg_time_elapsed) + ' seconds')
-    logger_stream.info(logger_arrow.main + '... END')
-    logger_stream.info(logger_arrow.main + 'Bye, Bye')
-    logger_stream.info(logger_arrow.arrow_main_break)
+    logging_handle.info_header(alg_name + ' (Version: ' + alg_version + ' Release_Date: ' + alg_release + ')', blank_before=True)
+    logging_handle.info_header('TIME ELAPSED: ' + str(alg_time_elapsed) + ' seconds')
+    logging_handle.info_header('... END')
+    logging_handle.info_header('Bye, Bye')
+    logging_handle.info_header(LoggingManager.rule_line("=", 78))
     # ------------------------------------------------------------------------------------------------------------------
 
-
 # ----------------------------------------------------------------------------------------------------------------------
-def run_orc_process(orc_process, sim_time):
-    max_retries = 5
-    for attempt in range(max_retries):
-        try:
-            orc_process.run(time=sim_time)
-            break
-        except BrokenPipeError as error:
-            if error.errno == 108:
-                if attempt < max_retries - 1:
-                    time.sleep((attempt + 1) * 2)  # Increasing delay: 2s, 4s, 6s
-                    continue
-                else:
-                    raise # After max retries, exit with the error
-            else:
-                raise
-        except ValueError:
-            if attempt < max_retries - 1:
-                    time.sleep((attempt + 1) * 2)  # Increasing delay: 2s, 4s, 6s
-                    continue
-            else:
-                raise # After max retries, exit with the error
-
-# ----------------------------------------------------------------------------------------------------------------------
-
 
 # ----------------------------------------------------------------------------------------------------------------------
 # call script from external library
