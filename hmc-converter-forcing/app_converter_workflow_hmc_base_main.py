@@ -289,14 +289,15 @@ def main(alg_collectors_settings: dict = None):
         wind_speed_handler = DataLocal(
             path=step_cfg_application['data_source']['wind']['path'],
             file_name=step_cfg_application['data_source']['wind']['file_name'],
-            file_format=None, file_mode=None, file_variable='wind',
+            file_type='grid_3d', file_format='netcdf', file_mode='local',
+            file_variable='wind', file_io='input',
             variable_template={
-                "dims_geo": {"lon": "longitude", "lat": "latitude", "nt": "time"},
-                "vars_data": {"Wind": "wind"}
-            },
-            time_signature='period',
-            time_reference=time_data_reference, time_period=time_data_length, time_freq='h', time_direction='forward',
-        )
+            "dims_geo": {"lon": "longitude", "lat": "latitude", "nt": "time"},
+            "vars_data": {"Wind": "wind"}
+        },
+        time_signature='period',
+        time_reference=time_data_reference, time_period=time_data_length, time_freq='h', time_direction='forward',
+)
 
         # destination data
         output_handler = DataLocal(
