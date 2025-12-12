@@ -109,8 +109,15 @@ RUN ./setup_fp_system_library_hmc.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE}
 # INSTALL - DOCKER SYSTEM APPS
 # clone library from github repository
 RUN git clone https://github.com/c-hydro/fp-system-app.git --branch main --single-branch /tmp/app_system/
+WORKDIR /tmp/app_system/
+# Checkout old commit to avoid compilation problems
+RUN git checkout v1.0.4
+
 # copy files from tmp to container folder(s)
 RUN cp -rf /tmp/app_system/. ${LIBS_INSTALLER_DIR} 
+# FIX FOR VERSION 3.1.6
+COPY ./setup_fp_system_app_hmc.sh ${LIBS_INSTALLER_DIR} 
+
 
 # start installer script for hmc libraries
 WORKDIR ${LIBS_INSTALLER_DIR}
@@ -236,9 +243,13 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 ### New repository SHYBOX
 
 WORKDIR /app/shybox
-RUN git clone https://github.com/c-hydro/shybox.git --branch itwater --single-branch /app/shybox/
+RUN git clone https://github.com/c-hydro/shybox.git --branch itwater  /app/shybox/
 
-RUN /app/shybox/setup_conda_shybox_base.sh
+## DESTINE V 1.3.1 
+RUN git checkout 0af0ee605af6fadf14eb573dca6bf259e7cd7327
+## TO BE DONE 
+RUN /app/shybox/setup_shybox_base.sh
+#RUN /app/shybox/setup_conda_shybox_base.sh
 
 ENV	CONDA_PATH=/app/shybox/conda
 

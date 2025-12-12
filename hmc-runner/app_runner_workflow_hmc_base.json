@@ -1,6 +1,6 @@
 {
-  "__comment__": "configuration file for the hmc runner information",
-  "settings": {
+  "__comment__": "configuration file for the hmc runner information [3.1.6]",
+  "configuration": {
     "priority": {
       "reference": "environment",
       "other": "user"
@@ -76,14 +76,14 @@
       }
     }
   },
-  "namelist": {
+  "application_namelist": {
     "description": {
       "version": "3.1.6",
       "type": "hmc"
     },
     "file": {
       "template": "hmc.template.info.v3.1.6.txt",
-      "project": "{path_app}/{file_namelist}"
+      "location": "{path_app}/{file_namelist}"
     },
     "fields": {
       "by_value": {
@@ -142,7 +142,7 @@
       }
     }
   },
-  "application": {
+  "application_execution": {
     "description": {
       "execution_name": "{execution_name}",
       "execution_mode": "{execution_mode}"
@@ -155,30 +155,18 @@
       "location": "/$HOME/run_base/exec/HMC_Model_V3_{execution_name}_{execution_mode}.info"
     },
     "library": {
-      "location": "/app/library/package_hmc/hmc/HMC_Model_V3_$RUN.x",
+      "location": "$HOME/fp_system_apps/hmc/HMC_Model_V3_$RUN.x",
       "dependencies": [
-        "/app/library/libs_system/nc4/lib/"
+        "$HOME/fp_system_libs_hmc/nc4/lib/"
       ]
     }
   },
-  "configuration": {
-    "time_run": "{time_run}",
-    "time_restart": "{time_restart}",
-    "time_period": "{time_period}",
-    "time_start": "{time_start}",
-    "time_end": "{time_end}",
-    "time_rounding": "{time_rounding}",
-    "domain_name": "{domain_name}",
-    "path_app": "{path_app}",
-    "path_source": "{path_source}",
-    "path_destination": "{path_destination}",
-    "file_namelist": "{file_namelist}",
-    "path_namelist": "{path_app}",
-    "file_log": "{file_log}",
-    "path_log": "{path_app}",
-    "file_tmp": null,
-    "path_tmp": "{path_app}",
-    "execution_name": "{execution_name}",
-    "execution_mode": "{execution_mode}"
+  "log": {
+    "path": "{path_log}",
+    "file_name": "runner_hmc.txt"
+  },
+  "tmp": {
+    "path": "{path_tmp}",
+    "file_name": null
   }
 }
