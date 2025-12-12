@@ -9,4 +9,4 @@ echo JSON PATH :
 echo $JSON_PATH
 echo -----------------------------------------------------
 cd /app/exec/
-python /app/shybox/workflow/runner/app_runner_workflow_hmc_base_main.py -settings $JSON_PATH
+python /app/shybox/workflow/runner/app_runner_workflow_hmc_base_main.py -settings_file $JSON_PATH
