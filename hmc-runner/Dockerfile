@@ -245,8 +245,8 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 WORKDIR /app/shybox
 RUN git clone https://github.com/c-hydro/shybox.git --branch itwater  /app/shybox/
 
-## DESTINE V 1.3.1 
-RUN git checkout 0af0ee605af6fadf14eb573dca6bf259e7cd7327
+## DESTINE V 1.3.2
+RUN git checkout 19a46f0c18bb10a6e5dcb9e5caf3626b89b1f91c
 ## TO BE DONE 
 RUN /app/shybox/setup_shybox_base.sh
 #RUN /app/shybox/setup_conda_shybox_base.sh
