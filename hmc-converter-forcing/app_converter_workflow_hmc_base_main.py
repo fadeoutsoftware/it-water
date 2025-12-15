@@ -35,6 +35,7 @@ import time
 
 import numpy as np
 import pandas as pd
+from multiprocessing import Process
 
 from shybox.config_toolkit.arguments_handler import ArgumentsManager
 from shybox.config_toolkit.config_handler import ConfigManager
@@ -195,7 +196,7 @@ def main(alg_collectors_settings: dict = None):
         logger=logging_handle, message=False
     )
     # ------------------------------------------------------------------------------------------------------------------
-
+    orc_processes = []
     # ------------------------------------------------------------------------------------------------------------------
     # iterate over simulation time
     for time_step in alg_time_generic:
@@ -330,10 +331,19 @@ def main(alg_collectors_settings: dict = None):
             logger=logging_handle
         )
         # orchestrator exec
-        orc_process.run(time=pd.date_range(start=time_anls_start, end=time_anls_end, freq='h'))
-
+        #orc_process.run(time=pd.date_range(start=time_anls_start, end=time_anls_end, freq='h'))
+        launch_time = pd.date_range(start=time_anls_start, end=time_anls_end, freq='h')
+        orc_processes.append([orc_process,launch_time])
     # ------------------------------------------------------------------------------------------------------------------
+    print("Processes count : " + str(len(orc_processes)))
+    sys_processes = []
+    for (orc_process, sim_time) in orc_processes:
+        p = Process(target=run_orc_process, args=(orc_process, sim_time))
+        sys_processes.append(p)
+        p.start()
 
+    for p in sys_processes:
+        p.join()
     # ------------------------------------------------------------------------------------------------------------------
     ## INFO END
     # info algorithm (end)
@@ -345,7 +355,28 @@ def main(alg_collectors_settings: dict = None):
     logging_handle.info_header('Bye, Bye')
     logging_handle.info_header(LoggingManager.rule_line("=", 78))
     # ------------------------------------------------------------------------------------------------------------------
-
+# ----------------------------------------------------------------------------------------------------------------------
+def run_orc_process(orc_process, sim_time):
+    max_retries = 5
+    for attempt in range(max_retries):
+        try:
+            orc_process.run(time=sim_time)
+            break
+        except BrokenPipeError as error:
+            if error.errno == 108:
+                if attempt < max_retries - 1:
+                    time.sleep((attempt + 1) * 2)  # Increasing delay: 2s, 4s, 6s
+                    continue
+                else:
+                    raise # After max retries, exit with the error
+            else:
+                raise
+        except ValueError:
+            if attempt < max_retries - 1:
+                    time.sleep((attempt + 1) * 2)  # Increasing delay: 2s, 4s, 6s
+                    continue
+            else:
+                raise # After max retries, exit with the error
 # ----------------------------------------------------------------------------------------------------------------------
 
 # ----------------------------------------------------------------------------------------------------------------------
