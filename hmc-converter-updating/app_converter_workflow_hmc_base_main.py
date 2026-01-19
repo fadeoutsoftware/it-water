@@ -232,7 +232,7 @@ def main(alg_collectors_settings: dict = None):
             path=alg_cfg_application['data_destination']['path'],
             file_name=alg_cfg_application['data_destination']['file_name'],
             time_signature='step',
-            file_format='netcdf', file_type='hmc', file_mode='local',
+            file_format='netcdf', file_type='grid_hmc', file_mode='local',
             file_variable=['snow_mask'], file_io='output',
             variable_template={
                 "dims_geo": {"longitude": "west_east", "latitude": "south_north", "time": "time"},
