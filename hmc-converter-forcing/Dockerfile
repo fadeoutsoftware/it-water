@@ -249,12 +249,12 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 ### New repository SHYBOX
 ### TODO initialization of ENV variables 
 WORKDIR /app/shybox
-RUN git clone https://github.com/c-hydro/shybox.git --branch itwater  /app/shybox/
+RUN git clone https://github.com/c-hydro/shybox.git --branch itwater_hmc  /app/shybox/
 
 #RUN git checkout 4ac8b087257d6aaad6cd005932822c3b49b72c34
 
-## DESTINE V 1.3.1 
-RUN git checkout 0af0ee605af6fadf14eb573dca6bf259e7cd7327
+## ITWATER-HMC Specific project branch 
+RUN git checkout 8823b2b28ebd8b009e7e397e5dbad4b5cd3e5b3f
 ## TO BE DONE 
 RUN /app/shybox/setup_shybox_base.sh
 
