@@ -1,0 +1,6 @@
+# User specific aliases and functions
+
+export DATA=/g100_work/smr_prod/a07smr01/IT-WATER/
+export W1=/g100_work/IscrC_IT-WATER
+export W2=/g100_work/IscrC_ITWATER2
+export W3=/g100_work/CNHPC_2363290
