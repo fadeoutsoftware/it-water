@@ -1,5 +1,5 @@
 # Glacier Watchdog
-![G W D ](/Logo.png)
+![G W D ](https://github.com/fadeoutsoftware/it-water/blob/develop/script/GlacierWatchDog/Logo.png)
 ### Intro 
 The current folders contains python utils to monitor the S3M simulation process. 
 The main objective is to avoid potential pitfalls during simulation, in particular related to restart mismanagement. 
