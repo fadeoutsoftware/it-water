@@ -98,8 +98,13 @@ SHELL ["/bin/bash", "-c"]
 RUN git clone https://github.com/c-hydro/fp-system-library.git --branch main --single-branch /tmp/libs_system/
 # copy files from tmp to container folder(s)
 RUN cp -r /tmp/libs_system/. ${LIBS_INSTALLER_DIR} 
+
+
+
 # start installer script for system libraries
 WORKDIR ${LIBS_INSTALLER_DIR}
+# FIX for Zlib wrong reference
+COPY setup_fp_system_library_s3m.sh .
 RUN pwd
 RUN ./setup_fp_system_library_s3m.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE}
 # -----------------------------------------------------------------
@@ -108,14 +113,15 @@ RUN ./setup_fp_system_library_s3m.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE}
 # -----------------------------------------------------------------
 # INSTALL - DOCKER SYSTEM APPS
 # clone library from github repository
-RUN git clone https://github.com/c-hydro/fp-system-app.git --branch main --single-branch /tmp/app_system/
+#RUN git clone https://github.com/c-hydro/fp-system-app.git --branch main /tmp/app_system/
 # copy files from tmp to container folder(s)
-RUN cp -rf /tmp/app_system/. ${LIBS_INSTALLER_DIR} 
+#RUN cp -rf /tmp/app_system/. ${LIBS_INSTALLER_DIR} 
 
 # start installer script for hmc libraries
-WORKDIR ${LIBS_INSTALLER_DIR}
-RUN pwd
-RUN ./setup_fp_system_app_s3m.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE} ${PACKAGE_HMC_DIR}
+#WORKDIR ${LIBS_INSTALLER_DIR}
+
+#RUN pwd
+#RUN ./setup_fp_system_app_hmc.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE} ${PACKAGE_HMC_DIR}
 
 ### TODO ADD similar call in the S3M docker image generation
 
@@ -239,6 +245,8 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 ### TODO initialization of ENV variables 
 WORKDIR /app/shybox
 RUN git clone https://github.com/c-hydro/shybox.git --branch itwater --single-branch /app/shybox/
+
+RUN git checkout -d 86d06a3ba25c53a51f0b097945f765f7e9f13752
 
 RUN /app/shybox/setup_conda_shybox_base.sh
 
