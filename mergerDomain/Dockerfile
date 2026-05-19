@@ -100,6 +100,8 @@ RUN git clone https://github.com/c-hydro/fp-system-library.git --branch main --s
 RUN cp -r /tmp/libs_system/. ${LIBS_INSTALLER_DIR} 
 # start installer script for system libraries
 WORKDIR ${LIBS_INSTALLER_DIR}
+# FIX for Zlib wrong reference
+COPY setup_fp_system_library_s3m.sh .
 RUN pwd
 RUN ./setup_fp_system_library_s3m.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE}
 # -----------------------------------------------------------------
@@ -108,14 +110,16 @@ RUN ./setup_fp_system_library_s3m.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE}
 # -----------------------------------------------------------------
 # INSTALL - DOCKER SYSTEM APPS
 # clone library from github repository
-RUN git clone https://github.com/c-hydro/fp-system-app.git --branch main --single-branch /tmp/app_system/
+#RUN git clone https://github.com/c-hydro/fp-system-app.git --branch main --single-branch /tmp/app_system/
 # copy files from tmp to container folder(s)
-RUN cp -rf /tmp/app_system/. ${LIBS_INSTALLER_DIR} 
+#RUN cp -rf /tmp/app_system/. ${LIBS_INSTALLER_DIR} 
+# FIX for Zlib wrong reference
+#COPY setup_fp_system_library_s3m.sh .
 
 # start installer script for hmc libraries
-WORKDIR ${LIBS_INSTALLER_DIR}
-RUN pwd
-RUN ./setup_fp_system_app_s3m.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE} ${PACKAGE_HMC_DIR}
+#WORKDIR ${LIBS_INSTALLER_DIR}
+#RUN pwd
+#RUN ./setup_fp_system_app_s3m.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE} ${PACKAGE_HMC_DIR}
 
 ### TODO ADD similar call in the S3M docker image generation
 
@@ -238,9 +242,15 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 ### New repository SHYBOX
 ### TODO initialization of ENV variables 
 WORKDIR /app/shybox
-RUN git clone https://github.com/c-hydro/shybox.git --branch itwater --single-branch /app/shybox/
+RUN git clone https://github.com/c-hydro/shybox.git --branch itwater_hmc --single-branch /app/shybox/
 
-RUN /app/shybox/setup_conda_shybox_base.sh
+## ITWATER-HMC Specific project branch 
+RUN git checkout 8823b2b28ebd8b009e7e397e5dbad4b5cd3e5b3f
+
+## TO BE DONE 
+RUN /app/shybox/setup_shybox_base.sh
+
+#RUN /app/shybox/setup_conda_shybox_base.sh
 
 ENV	CONDA_PATH=/app/shybox/conda
 

@@ -98,8 +98,12 @@ SHELL ["/bin/bash", "-c"]
 RUN git clone https://github.com/c-hydro/fp-system-library.git --branch main --single-branch /tmp/libs_system/
 # copy files from tmp to container folder(s)
 RUN cp -r /tmp/libs_system/. ${LIBS_INSTALLER_DIR} 
+
+
 # start installer script for system libraries
 WORKDIR ${LIBS_INSTALLER_DIR}
+# FIX for Zlib wrong reference
+COPY setup_fp_system_library_s3m.sh .
 RUN pwd
 RUN ./setup_fp_system_library_s3m.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE}
 # -----------------------------------------------------------------
