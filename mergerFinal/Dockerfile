@@ -119,9 +119,9 @@ RUN cp -rf /tmp/app_system/. ${LIBS_INSTALLER_DIR}
 ENV LD_LIBRARY_PATH="/app/library/libs_system:/app/library/libs_system/source/nc4_fortran/fortran/.libs/"
 
 # start installer script for hmc libraries
-WORKDIR ${LIBS_INSTALLER_DIR}
-RUN pwd
-RUN ./setup_fp_system_app_hmc.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE} ${PACKAGE_HMC_DIR}
+#WORKDIR ${LIBS_INSTALLER_DIR}
+#RUN pwd
+#RUN ./setup_fp_system_app_hmc.sh ${LIBS_SYSTEM_DIR} ${SYSTEM_ENV_FILE} ${PACKAGE_HMC_DIR}
 
 ### TODO ADD similar call in the S3M docker image generation
 
@@ -244,9 +244,9 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 ### New repository SHYBOX
 ### TODO initialization of ENV variables 
 WORKDIR /app/shybox
-RUN git clone https://github.com/c-hydro/shybox.git --branch itwater --single-branch /app/shybox/
+RUN git clone https://github.com/c-hydro/shybox.git --branch itwater_hmc --single-branch /app/shybox/
 
-RUN /app/shybox/setup_conda_shybox_base.sh
+RUN /app/shybox/setup_shybox_base.sh
 
 ENV	CONDA_PATH=/app/shybox/conda
 
