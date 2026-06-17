@@ -1,0 +1,11 @@
+numpy
+xarray
+pandas
+matplotlib
+netCDF4
+rasterio
+rioxarray
+geopandas
+rasterstats
+contextily
+pillow

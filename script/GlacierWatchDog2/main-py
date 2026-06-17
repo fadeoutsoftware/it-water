@@ -1,0 +1,179 @@
+import numpy as np
+import xarray as xr
+import pandas as pd
+import rasterio
+import os
+import rioxarray
+import geopandas as gpd
+from rasterstats import zonal_stats
+from matplotlib.patches import Circle
+import contextily as ctx
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+from PIL import Image
+import matplotlib.pyplot as plt
+
+
+# Function to compute statistics for each difference raster
+def compute_regional_stats(diff_array, regions, transform, nodata=-9999):
+    """Compute zonal statistics for each region"""
+    stats = zonal_stats(
+        regions,
+        diff_array,  # Remove band dimension
+        affine=transform,
+        nodata=nodata,
+        stats=['mean', 'min', 'max', 'std', 'sum', 'count']
+    )
+    return pd.DataFrame(stats)
+
+
+# input
+ice_thickness_45 = "/nas-watersc/s3m/IT_WATER/dati_Galileo/SWE_ghiacciai/rcp45"
+ice_thickness_85 = "/nas-watersc/s3m/IT_WATER/dati_Galileo/SWE_ghiacciai/rcp85"
+shapefile_regions = "/share/drought/IT_WATER/analisi_finali/Shape/ITA_adm1.shp"
+AreaCell = "/share/drought/IT_WATER/analisi_finali/Griglie/AreaCell_Italy_200m_WGS84geog.tiff"
+logo_path = '/share/drought/IT_WATER/analisi_finali/ITWATER.png'
+years_list = list(range(2023, 2070, 1))
+
+# Load shapefile
+regions = gpd.read_file(shapefile_regions)
+
+# Loop over years, load raster, multiply by area, compute sum per region
+results = []
+for year in years_list:
+    
+    #rcp 45
+    # Compose filename (assuming 1st Sep, 12:00 for each year)
+    # se è 2023 usa 1 settembre, altrimenti 31 agosto
+    if year == 2023:
+        date_str = f"{year}09011200"
+        raster_path = os.path.join(
+        ice_thickness_45, str(year), 
+        f"09/01/Ice_Thickness.{date_str}.tiff"
+    )
+    else:
+        date_str = f"{year}08311200"
+        raster_path = os.path.join(
+        ice_thickness_45, str(year), 
+        f"08/31/Ice_Thickness.{date_str}.tiff"
+    )
+
+    if not os.path.exists(raster_path):
+        print(f"File not found: {raster_path}")
+        continue
+    with rasterio.open(raster_path) as src:
+        ice_thick = src.read()
+        transform = src.transform
+    # Multiply by area cell
+    with rasterio.open(AreaCell) as src:
+        area_cell = src.read()
+    ice_vol = np.squeeze(ice_thick) * np.squeeze(area_cell)
+    # Compute zonal statistics for this year's glacier volume
+    stats = compute_regional_stats(ice_vol, regions, transform)
+
+    # Create a DataFrame: rows = years, columns = region names, values = 'sum' from stats
+    df_volumes_45 = pd.DataFrame([stats['sum'].values], columns=regions['NAME_1'], index=[year])
+    df_volumes_45['year'] = year
+    df_volumes_45 = df_volumes_45.set_index('year')
+    # If first year, create the full DataFrame; else, append
+    if 'df_all_volumes_45' not in locals():
+        df_all_volumes_45 = df_volumes_45
+    else:
+        df_all_volumes_45 = pd.concat([df_all_volumes_45, df_volumes_45])
+    
+    # rcp 85
+    if year == 2023:
+        date_str_85 = f"{year}09011200"
+        raster_path_85 = os.path.join(
+            ice_thickness_85, str(year),
+            f"09/01/Ice_Thickness.{date_str_85}.tiff"
+        )
+    else:
+        date_str_85 = f"{year}08311200"
+        raster_path_85 = os.path.join(
+            ice_thickness_85, str(year),
+            f"08/31/Ice_Thickness.{date_str_85}.tiff"
+        )
+    if not os.path.exists(raster_path_85):
+        print(f"File not found: {raster_path_85}")
+        continue
+    with rasterio.open(raster_path_85) as src:
+        ice_thick_85 = src.read()
+        transform_85 = src.transform
+    with rasterio.open(AreaCell) as src:
+        area_cell_85 = src.read()
+    ice_vol_85 = np.squeeze(ice_thick_85) * np.squeeze(area_cell_85)
+    stats_85 = compute_regional_stats(ice_vol_85, regions, transform_85)
+    df_volumes_85 = pd.DataFrame([stats_85['sum'].values], columns=regions['NAME_1'], index=[year])
+    df_volumes_85['year'] = year
+    df_volumes_85 = df_volumes_85.set_index('year')
+    if 'df_all_volumes_85' not in locals():
+        df_all_volumes_85 = df_volumes_85
+    else:
+        df_all_volumes_85 = pd.concat([df_all_volumes_85, df_volumes_85])   
+    
+    print(f"Processed year: {year}")
+
+# ora restringi i df alle colonne che non iniziano con 0 in prima riga
+# Filter columns for RCP 4.5
+cols_45 = [col for col in df_all_volumes_45.columns if not str(df_all_volumes_45.iloc[0][col]).startswith('0')]
+df_all_volumes_45_filtered = df_all_volumes_45[cols_45] 
+# Filter columns for RCP 8.5
+cols_85 = [col for col in df_all_volumes_85.columns if not str(df_all_volumes_85.iloc[0][col]).startswith('0')]
+df_all_volumes_85_filtered = df_all_volumes_85[cols_85]
+
+# fai una media tra i due scenari per ogni regione e ogni anno, e filtra le regioni che hanno volume 0 in tutti gli anni
+df_avg_volumes = (df_all_volumes_45_filtered + df_all_volumes_85_filtered) / 2
+
+# c'è una regione che contiene Friuli, toglila
+df_avg_volumes = df_avg_volumes.drop(columns=[col for col in df_avg_volumes.columns if 'Friuli' in col])
+
+# fai una media mobile a 5 anni per ogni regione
+df_avg_volumes = df_avg_volumes.rolling(window=5, min_periods=1).mean()
+df_all_volumes_45_filtered = df_all_volumes_45_filtered.rolling(window=5, min_periods=1).mean()
+df_all_volumes_85_filtered = df_all_volumes_85_filtered.rolling(window=5, min_periods=1).mean()
+
+# Plotting: one panel per region (column), years on x, volume (m3) on y, both scenarios
+num_regions = len(df_avg_volumes.columns)
+fig, axes = plt.subplots(
+    nrows=(num_regions + 2) // 3, ncols=3, 
+    figsize=(18, 5 * ((num_regions + 2) // 3)), 
+    constrained_layout=True
+)
+
+if num_regions == 1:
+    axes = np.array([[axes]])
+axes = axes.flatten()
+
+for idx, region in enumerate(df_avg_volumes.columns):
+    ax = axes[idx]
+    ax.plot(df_avg_volumes.index, df_avg_volumes[region], label='Average Volume (RCP 4.5 & 8.5)', color='blue')
+    # mettici in dashed anche i singoli scenari
+    ax.plot(df_all_volumes_45_filtered.index, df_all_volumes_45_filtered[region], label='RCP 4.5', color='orange', linestyle='--')
+    ax.plot(df_all_volumes_85_filtered.index, df_all_volumes_85_filtered[region], label='RCP 8.5', color='red', linestyle='--')
+    ax.set_title(region)
+    ax.set_xlabel('Year')
+    ax.set_ylabel('Glacier Volume (m³)')
+    ax.legend()
+    ax.grid(True)
+
+# Hide unused subplots
+for j in range(idx + 1, len(axes)):
+    fig.delaxes(axes[j])
+
+plt.suptitle('Glacier Volume Trajectories by Region', fontsize=18)
+#save figure
+plt.tight_layout()
+plt.savefig('/share/drought/IT_WATER/analisi_finali/Glaciers/glacier_volume_timeseries.png', dpi=300, bbox_inches='tight')
+
+# Plot all regions on the same plot with different colors
+plt.figure(figsize=(12, 7))
+for region in df_avg_volumes.columns:
+    plt.plot(df_avg_volumes.index, df_avg_volumes[region], label=region)
+plt.xlabel('Year')
+plt.ylabel('Glacier Volume (m³)')
+plt.title('Glacier Volume Trajectories by Region (All Regions)')
+plt.legend(loc='upper right', fontsize='small', ncol=2)
+plt.grid(True)
+plt.tight_layout()
+plt.savefig('/share/drought/IT_WATER/analisi_finali/Glaciers/glacier_volume_timeseries_allregions.png', dpi=300, bbox_inches='tight')
+plt.show()
