@@ -246,6 +246,15 @@ RUN echo "source ${LIBS_SYSTEM_DIR}/${SYSTEM_ENV_FILE}" >> /home/app/.profile
 WORKDIR /app/shybox
 RUN git clone https://github.com/c-hydro/shybox.git --branch itwater_hmc --single-branch /app/shybox/
 
+## FIX for missing library file
+COPY lib_dataset_ondemand.py /app/shybox/shybox/dataset_toolkit
+
+## FIX for missing library file
+COPY lib_utils_string.py /app/shybox/shybox/generic_toolkit/
+
+## FIX for missing library file
+COPY dataset_handler_on_demand.py /app/shybox/shybox/generic_toolkit/
+
 RUN /app/shybox/setup_shybox_base.sh
 
 ENV	CONDA_PATH=/app/shybox/conda
