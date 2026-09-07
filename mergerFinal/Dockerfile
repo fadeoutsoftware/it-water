@@ -114,8 +114,7 @@ RUN /app/shybox/setup_shybox_base.sh
 ENV	CONDA_PATH=/app/shybox/conda
 
 WORKDIR /app/shybox/workflow/merger
-#COPY venvSetup.sh /app/shybox/workflow/merger
-#RUN /app/shybox/workflow/merger/venvSetup.sh
+
 
 COPY app_merger_by_domain_workflow_hmc_et.json /app/shybox/workflow/merger
 COPY app_merger_by_domain_workflow_hmc_et.py /app/shybox/workflow/merger
