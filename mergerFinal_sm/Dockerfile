@@ -108,6 +108,8 @@ WORKDIR /app/shybox
 RUN git clone https://github.com/c-hydro/shybox.git --branch main --single-branch /app/shybox/
 RUN git fetch
 RUN git checkout 03519c9b4e30714c69a48265720d7e62e4610a98
+# SWAP Shybox library to compute sm with our fixed version 
+COPY lib_proc_compute_sm.py /app/shybox/shybox/processing_hydro_toolkit/
 
 RUN /app/shybox/setup_shybox_base.sh
 
