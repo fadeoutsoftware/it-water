@@ -62,13 +62,18 @@ if ($Domains.Count -eq 0) {
 
 function Copy-Month([string]$RelativePath) {
     $RemotePath = "$RemoteBase/$RelativePath"
+    $DestinationPath = Join-Path $DestinationBase ($RelativePath -replace '/', [IO.Path]::DirectorySeparatorChar)
+
+    if (Test-Path -LiteralPath $DestinationPath -PathType Container) {
+        Write-Host "Skipping existing destination folder: $RelativePath"
+        return
+    }
 
     if (-not (Test-RemoteDirectory $RemotePath)) {
         Write-Warning "Skipping missing remote path: $RelativePath"
         return
     }
 
-    $DestinationPath = Join-Path $DestinationBase ($RelativePath -replace '/', [IO.Path]::DirectorySeparatorChar)
     $DestinationParent = Split-Path -Parent $DestinationPath
     New-Item -ItemType Directory -Path $DestinationParent -Force | Out-Null
 

@@ -51,6 +51,11 @@ copy_month() {
   local remote_path="${REMOTE_BASE}/${relative_path}"
   local destination_parent
 
+  if [[ -d "$destination_path" ]]; then
+    echo "Skipping existing destination folder: ${relative_path}"
+    return
+  fi
+
   if ! ssh "$SSH_TARGET" "test -d $(shell_quote "$remote_path")"; then
     echo "Skipping missing remote path: ${relative_path}" >&2
     return

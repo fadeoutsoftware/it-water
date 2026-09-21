@@ -95,8 +95,9 @@ chmod +x HMC_output_downloader.sh
 	 ```
 
 4. Skip paths that do not exist on the remote server.
-5. Download each existing directory with `scp -r`.
-6. Create the required local parent directories and preserve the relative
+5. Skip monthly folders that already exist in `DESTINATION_PATH`.
+6. Download each remaining directory with `scp -r`.
+7. Create the required local parent directories and preserve the relative
 	 remote structure.
 
 The `model_state/time_series` path is checked for consistency, but it is
@@ -120,3 +121,7 @@ input/
 
 Existing files are handled by `scp` according to its normal behavior. The
 script does not delete files from the destination or from the remote server.
+Because an existing destination folder is skipped as a unit, restart the
+download only after confirming that a folder created during an interrupted
+transfer is complete; remove that incomplete local folder if it must be
+downloaded again.
