@@ -8,4 +8,4 @@ docker run -it \
 --env-file .env-mergerfinal_et \
 docker.io/it-water/mergerfinal_et:dev
 
-docker rm merger-final_sm
+docker rm merger-final_et
